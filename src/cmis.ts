@@ -1225,7 +1225,7 @@ export namespace cmis {
       options.cmisaction = 'delete';
       options.objectId = objectId;
       options.allVersions = allVersions;
-      options.forceDelete = forceDelete;
+      options.forceDelete = forceDelete ;
       return this.post(this.defaultRepository.rootFolderUrl, options);
     };
 
