@@ -12,22 +12,28 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 require("cross-fetch/polyfill");
 var isomorphic_base64_1 = require("isomorphic-base64");
 require("isomorphic-form-data");
 require("url-search-params-polyfill");
 var cmis;
 (function (cmis) {
+    /**
+     * used for node/browser compatibility
+     */
     var Buffer = global['Buffer'];
-    var Options = (function () {
+    var Options = /** @class */ (function () {
         function Options() {
             this.succinct = true;
         }
         return Options;
     }());
     ;
-    var HTTPError = (function (_super) {
+    /**
+     * An error wrapper to handle response in Promise.catch()
+     */
+    var HTTPError = /** @class */ (function (_super) {
         __extends(HTTPError, _super);
         function HTTPError(response) {
             var _this = _super.call(this, response.statusText) || this;
@@ -37,11 +43,37 @@ var cmis;
         return HTTPError;
     }(Error));
     cmis.HTTPError = HTTPError;
-    var CmisSession = (function () {
+    /**
+     * The session is the entry point for all cmis requests
+     *
+     * example usage:
+     *
+     *      // typescript/es6
+     *      let session = new cmis.CmisSession('http://localhost:18080/alfresco/cmisbrowser');
+     *      session.setCredentials(username, password).loadRepositories()
+     *          .then(() => session.query("select * from cmis:document"))
+     *          .then(data => console.log(data));
+     *
+     *      // javascript/es5
+     *      var session = new cmis.CmisSession('http://localhost:18080/alfresco/cmisbrowser');
+     *      session.setCredentials(username, password).loadRepositories().then(function(){
+     *            return session.query("select * from cmis:document"));
+     *      }).then(function(data) {console.log(data);});
+     *
+     */
+    var CmisSession = /** @class */ (function () {
+        /**
+         * Creates an instance of CmisSession.
+         */
         function CmisSession(url) {
             this.options = { succinct: true };
             this.url = url;
         }
+        /**
+         * format properties for requests
+         *
+         * @memberof CmisSession
+         */
         CmisSession.prototype.setProperties = function (options, properties) {
             var i = 0;
             for (var id in properties) {
@@ -61,12 +93,18 @@ var cmis;
                 i++;
             }
         };
+        /**
+         * format policies for requests
+         */
         CmisSession.prototype.setPolicies = function (options, policies) {
             for (var i = 0; i < policies.length; i++) {
                 options['policy[' + i + ']'] = policies[i];
             }
         };
         ;
+        /**
+         * format ACEs for requests
+         */
         CmisSession.prototype.setACEs = function (options, ACEs, action) {
             var i = 0;
             for (var id in ACEs) {
@@ -79,12 +117,18 @@ var cmis;
             }
         };
         ;
+        /**
+         * format secondaryTypeIds for requests
+         */
         CmisSession.prototype.setSecondaryTypeIds = function (options, secondaryTypeIds, action) {
             for (var i = 0; i < secondaryTypeIds.length; i++) {
                 options[action + 'SecondaryTypeId[' + i + ']'] = secondaryTypeIds[i];
             }
         };
         ;
+        /**
+        * add list of ObjectIds for requests
+        */
         CmisSession.prototype.addPropertiesIds = function (options, ids) {
             var i = 0;
             options['propertyId[' + i + ']'] = "ids";
@@ -92,6 +136,9 @@ var cmis;
                 options['propertyValue[' + i + '][' + j + ']'] = ids[j];
             }
         };
+        /**
+         * internal method to perform http requests
+         */
         CmisSession.prototype.http = function (method, url, options, multipartData) {
             var _this = this;
             var body = {};
@@ -160,33 +207,57 @@ var cmis;
                 return res;
             });
             if (this.errorHandler) {
-                response.catch(function (err) { return _this.errorHandler(err); });
+                response["catch"](function (err) { return _this.errorHandler(err); });
             }
             return response;
         };
         ;
+        /**
+         * shorthand for http.('GET',...)
+         */
         CmisSession.prototype.get = function (url, options) {
             return this.http('GET', url, options);
         };
+        /**
+         * shorthand for http.('POST',...)
+         */
         CmisSession.prototype.post = function (url, options, multipartData) {
             return this.http('POST', url, options, multipartData);
         };
+        /**
+         * sets token for authentication
+         */
         CmisSession.prototype.setToken = function (token) {
             this.token = token;
             return this;
         };
+        /**
+         * sets credentials for authentication
+         */
         CmisSession.prototype.setCredentials = function (username, password) {
             this.username = username;
             this.password = password;
             return this;
         };
+        /**
+        *    IN HTML5, the character set to use for non-file fields can
+        *    be specified in a multipart by using a _charset_ field.
+        *    https://dev.w3.org/html5/spec-preview/attributes-common-to-form-controls.html#attr-fe-name-charset
+        */
         CmisSession.prototype.setCharset = function (charset) {
             this.charset = charset;
             return this;
         };
+        /**
+         * sets global error handler
+         */
         CmisSession.prototype.setErrorHandler = function (handler) {
             this.errorHandler = handler;
         };
+        /**
+         * Connects to a cmis server and retrieves repositories,
+         * token or credentils must already be set
+         */
         CmisSession.prototype.loadRepositories = function () {
             var _this = this;
             return this.get(this.url, this.options).then(function (res) {
@@ -200,10 +271,17 @@ var cmis;
                 });
             });
         };
+        /**
+         * gets repository informations
+         */
         CmisSession.prototype.getRepositoryInfo = function () {
             return this.get(this.defaultRepository.repositoryUrl, { cmisselector: 'repositoryInfo' })
                 .then(function (res) { return res.json(); });
         };
+        /**
+         * gets the types that are immediate children
+         * of the specified typeId, or the base types if no typeId is provided
+         */
         CmisSession.prototype.getTypeChildren = function (typeId, includePropertyDefinitions, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -212,6 +290,10 @@ var cmis;
             o.includePropertyDefinitions = includePropertyDefinitions;
             return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
+        /**
+         * gets all types descended from the specified typeId, or all the types
+         * in the repository if no typeId is provided
+         */
         CmisSession.prototype.getTypeDescendants = function (typeId, depth, includePropertyDefinitions) {
             return this.get(this.defaultRepository.repositoryUrl, {
                 cmisselector: 'typeDescendants',
@@ -220,12 +302,18 @@ var cmis;
                 depth: depth
             }).then(function (res) { return res.json(); });
         };
+        /**
+         * gets definition of the specified type
+         */
         CmisSession.prototype.getTypeDefinition = function (typeId) {
             return this.get(this.defaultRepository.repositoryUrl, {
                 cmisselector: 'typeDefinition',
-                typeId: typeId,
+                typeId: typeId
             }).then(function (res) { return res.json(); });
         };
+        /**
+         * gets the documents that have been checked out in the repository
+         */
         CmisSession.prototype.getCheckedOutDocs = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -233,6 +321,9 @@ var cmis;
             return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * performs a cmis query against the repository
+         */
         CmisSession.prototype.query = function (statement, searchAllVersions, options) {
             if (searchAllVersions === void 0) { searchAllVersions = false; }
             if (options === void 0) { options = {}; }
@@ -243,6 +334,9 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Creates a new type definition
+         */
         CmisSession.prototype.createType = function (type) {
             return this.post(this.defaultRepository.repositoryUrl, {
                 cmisaction: 'createType',
@@ -250,6 +344,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Updates a type definition
+         */
         CmisSession.prototype.updateType = function (type) {
             return this.post(this.defaultRepository.repositoryUrl, {
                 cmisaction: 'updateType',
@@ -257,6 +354,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Deletes a type definition
+         */
         CmisSession.prototype.deleteType = function (typeId) {
             return this.post(this.defaultRepository.repositoryUrl, {
                 cmisaction: 'deleteType',
@@ -264,6 +364,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets an object by path
+         */
         CmisSession.prototype.getObjectByPath = function (path, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -275,6 +378,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl + sp.join('/'), o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets an object by objectId
+         */
         CmisSession.prototype.getObject = function (objectId, returnVersion, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -284,6 +390,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * creates a new folder
+         */
         CmisSession.prototype.createFolder = function (parentId, properties, policies, addACEs, removeACEs) {
             if (policies === void 0) { policies = []; }
             if (addACEs === void 0) { addACEs = {}; }
@@ -299,6 +408,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Returns children of object specified by id
+         */
         CmisSession.prototype.getChildren = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -307,6 +419,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets all descendants of specified folder
+         */
         CmisSession.prototype.getDescendants = function (folderId, depth, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -318,6 +433,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets the folder tree of the specified folder
+         */
         CmisSession.prototype.getFolderTree = function (folderId, depth, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -329,6 +447,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets the parent folder of the specified folder
+         */
         CmisSession.prototype.getFolderParent = function (folderId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -337,6 +458,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets the folders that are the parents of the specified object
+         */
         CmisSession.prototype.getParents = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -345,6 +469,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets the allowable actions of the specified object
+         */
         CmisSession.prototype.getAllowableActions = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -353,6 +480,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+        * Gets the properties of the specified object
+        */
         CmisSession.prototype.getProperties = function (objectId, returnVersion, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -362,6 +492,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Updates properties of specified object
+         */
         CmisSession.prototype.updateProperties = function (objectId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -371,6 +504,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Moves an object
+         */
         CmisSession.prototype.moveObject = function (objectId, sourceFolderId, targetFolderId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -381,6 +517,14 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * creates a new document
+         *
+         * if `input` is a string it's used as the document name, otherwise as the document properties
+         *
+         * use `mimeTypeExtension` if your filename does not have a standard extension (tested only with Alfresco)
+         * example: 'pdf', 'png', 'jpg'
+         */
         CmisSession.prototype.createDocument = function (parentId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -416,6 +560,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Updates properties of specified objects
+         */
         CmisSession.prototype.bulkUpdateProperties = function (objectIds, properties, addSecondaryTypeIds, removeSecondaryTypeIds) {
             if (properties === void 0) { properties = {}; }
             if (addSecondaryTypeIds === void 0) { addSecondaryTypeIds = []; }
@@ -432,6 +579,9 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, options).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets document content
+         */
         CmisSession.prototype.getContentStream = function (objectId, download, streamId) {
             if (download === void 0) { download = 'inline'; }
             var options = new Options();
@@ -481,6 +631,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o, multipartData).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets document content URL
+         */
         CmisSession.prototype.getContentStreamURL = function (objectId, download, streamId) {
             if (download === void 0) { download = 'inline'; }
             var options = new Options();
@@ -502,16 +655,24 @@ var cmis;
             return this.defaultRepository.rootFolderUrl + "?" + usp.toString();
         };
         ;
+        /**
+         * gets document renditions
+         */
         CmisSession.prototype.getRenditions = function (objectId, options) {
-            if (options === void 0) { options = {
-                renditionFilter: '*'
-            }; }
+            if (options === void 0) {
+                options = {
+                    renditionFilter: '*'
+                };
+            }
             var o = options;
             o.cmisselector = 'renditions';
             o.objectId = objectId;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * checks out a document
+         */
         CmisSession.prototype.checkOut = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -520,6 +681,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * cancels a check out
+         */
         CmisSession.prototype.cancelCheckOut = function (objectId) {
             var options = new Options();
             options.objectId = objectId;
@@ -527,6 +691,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, options);
         };
         ;
+        /**
+         * checks in a document
+         */
         CmisSession.prototype.checkIn = function (objectId, major, input, content, mimeTypeExtension, comment, policies, addACEs, removeACEs, options) {
             if (major === void 0) { major = false; }
             if (options === void 0) { options = {}; }
@@ -560,6 +727,12 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Gets the latest document object in the version series
+         *
+         * {@link http://docs.oasis-open.org/cmis/CMIS/v1.1/CMIS-v1.1.html#x1-3360004}
+         *
+         */
         CmisSession.prototype.getObjectOfLatestVersion = function (versionSeriesId, options) {
             if (options === void 0) { options = { major: false }; }
             var o = options;
@@ -570,6 +743,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Updates content of document
+         */
         CmisSession.prototype.setContentStream = function (objectId, content, overwriteFlag, filename, options) {
             if (overwriteFlag === void 0) { overwriteFlag = false; }
             if (options === void 0) { options = {}; }
@@ -583,6 +759,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Appends content to document
+         */
         CmisSession.prototype.appendContentStream = function (objectId, content, isLastChunk, filename, options) {
             if (isLastChunk === void 0) { isLastChunk = false; }
             if (options === void 0) { options = {}; }
@@ -596,6 +775,9 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * deletes object content
+         */
         CmisSession.prototype.deleteContentStream = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -604,6 +786,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o);
         };
         ;
+        /**
+         * gets versions of object
+         */
         CmisSession.prototype.getAllVersions = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -612,6 +797,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets object applied policies
+         */
         CmisSession.prototype.getAppliedPolicies = function (objectId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -620,6 +808,15 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets object ACL
+         *
+         * @param {string} objectId
+         * @param {boolean} [onlyBasicPermissions=false]
+         * @returns {Promise<any>}
+         *
+         * @memberof CmisSession
+         */
         CmisSession.prototype.getACL = function (objectId, onlyBasicPermissions) {
             if (onlyBasicPermissions === void 0) { onlyBasicPermissions = false; }
             var options = new Options();
@@ -629,6 +826,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * deletes an object
+         */
         CmisSession.prototype.deleteObject = function (objectId, allVersions, forceDelete) {
             if (allVersions === void 0) { allVersions = false; }
             var options = new Options();
@@ -640,6 +840,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, options);
         };
         ;
+        /**
+         * Deletes a folder tree
+         */
         CmisSession.prototype.deleteTree = function (objectId, allVersions, forceDelete, unfileObjects, continueOnFailure) {
             if (allVersions === void 0) { allVersions = false; }
             if (continueOnFailure === void 0) { continueOnFailure = false; }
@@ -656,6 +859,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, options);
         };
         ;
+        /**
+         * gets the changed objects, the list object should contain the next change log token.
+         */
         CmisSession.prototype.getContentChanges = function (changeLogToken, includeProperties, includePolicyIds, includeACL, options) {
             if (includeProperties === void 0) { includeProperties = false; }
             if (includePolicyIds === void 0) { includePolicyIds = false; }
@@ -672,6 +878,9 @@ var cmis;
             return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Creates a relationship
+         */
         CmisSession.prototype.createRelationship = function (properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -689,6 +898,9 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Creates a policy
+         */
         CmisSession.prototype.createPolicy = function (folderId, properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -707,6 +919,9 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Creates an item
+         */
         CmisSession.prototype.createItem = function (folderId, properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -725,10 +940,16 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets last result
+         */
         CmisSession.prototype.getLastResult = function () {
             return this.post(this.defaultRepository.repositoryUrl, { cmisaction: 'lastResult' }).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Adds specified object to folder
+         */
         CmisSession.prototype.addObjectToFolder = function (objectId, folderId, allVersions, options) {
             if (allVersions === void 0) { allVersions = false; }
             if (options === void 0) { options = {}; }
@@ -740,6 +961,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * Removes specified object from folder
+         */
         CmisSession.prototype.removeObjectFromFolder = function (objectId, folderId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -749,6 +973,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * gets object relationships
+         */
         CmisSession.prototype.getObjectRelationships = function (objectId, includeSubRelationshipTypes, relationshipDirection, typeId, options) {
             if (includeSubRelationshipTypes === void 0) { includeSubRelationshipTypes = false; }
             if (options === void 0) { options = {}; }
@@ -763,6 +990,9 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * applies policy to object
+         */
         CmisSession.prototype.applyPolicy = function (objectId, policyId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -772,6 +1002,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * removes policy from object
+         */
         CmisSession.prototype.removePolicy = function (objectId, policyId, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -781,6 +1014,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * applies ACL to object
+         */
         CmisSession.prototype.applyACL = function (objectId, addACEs, removeACEs, propagation) {
             var options = new Options();
             options.objectId = objectId;
@@ -795,6 +1031,9 @@ var cmis;
             return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
         };
         ;
+        /**
+          * fectching getAllObjects
+          */
         CmisSession.prototype.getAllObjects = function (ids, options) {
             if (options === void 0) { options = {}; }
             var o = options;
@@ -803,9 +1042,13 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.createHierarchyObject = function (properties, policies, addACEs, removeACEs, options) {
+        /**
+         * createHierarchyObject
+         */
+        CmisSession.prototype.createHierarchyObject = function (folderId, properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
+            o.objectId = folderId;
             this.setProperties(o, properties);
             if (policies) {
                 this.setPolicies(o, policies);
@@ -820,41 +1063,63 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.assignToHierarchy = function (objectId, properties, options) {
+        /**
+         * assignToHierarchy
+         */
+        CmisSession.prototype.assignToHierarchy = function (folderId, properties, addACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = objectId;
+            o.objectId = folderId;
             this.setProperties(o, properties);
+            if (addACEs) {
+                this.setACEs(o, addACEs, 'add');
+            }
             o.cmisaction = 'assignToHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.addUsersToHierarchy = function (objectId, properties, options) {
+        /**
+         * addUsersToHierarchy
+         */
+        CmisSession.prototype.addUsersToHierarchy = function (folderId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = objectId;
-            o.cmisaction = 'addUsersToHierarchy';
+            o.objectId = folderId;
             this.setProperties(o, properties);
-            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
+            o.cmisaction = 'addUsersToHierarchy';
+            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.removeUsersFromHierarchy = function (objectId, properties, options) {
+        /**
+         * removeUsersFromHierarchy
+         */
+        CmisSession.prototype.removeUsersFromHierarchy = function (folderId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = objectId;
+            o.objectId = folderId;
             this.setProperties(o, properties);
             o.cmisaction = 'removeUsersFromHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.moveHierarchy = function (properties, options) {
+        /**
+         * moveHierarchy
+         */
+        CmisSession.prototype.moveHierarchy = function (folderId, properties, addACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
+            o.objectId = folderId;
             this.setProperties(o, properties);
+            if (addACEs) {
+                this.setACEs(o, addACEs, 'add');
+            }
             o.cmisaction = 'moveHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        /**
+         * deleteHierarchyObject
+         */
         CmisSession.prototype.deleteHierarchyObject = function (objectId, allVersions, forceDelete) {
             if (allVersions === void 0) { allVersions = false; }
             var options = new Options();
@@ -870,4 +1135,3 @@ var cmis;
     }());
     cmis.CmisSession = CmisSession;
 })(cmis = exports.cmis || (exports.cmis = {}));
-//# sourceMappingURL=cmis.js.map
