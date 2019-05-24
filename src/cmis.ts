@@ -1614,5 +1614,6 @@ export namespace cmis {
       options.forceDelete = forceDelete;
       return this.get(this.defaultRepository.rootFolderUrl, options);
     };
+
   }
 }
