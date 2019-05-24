@@ -17,14 +17,14 @@ export declare namespace cmis {
         defaultRepository: any;
         repositories: Array<any>;
         private charset;
-        private setProperties(options, properties);
-        private setPolicies(options, policies);
-        private setACEs(options, ACEs, action);
-        private setSecondaryTypeIds(options, secondaryTypeIds, action);
-        private addPropertiesIds(options, ids);
-        private http(method, url, options, multipartData?);
-        private get(url, options?);
-        private post(url, options?, multipartData?);
+        private setProperties;
+        private setPolicies;
+        private setACEs;
+        private setSecondaryTypeIds;
+        private addPropertiesIds;
+        private http;
+        private get;
+        private post;
         constructor(url: string);
         setToken(token: string): CmisSession;
         setCredentials(username: string, password: string): CmisSession;
@@ -222,8 +222,8 @@ export declare namespace cmis {
             succinct?: boolean;
         }): Promise<any>;
         getACL(objectId: string, onlyBasicPermissions?: boolean): Promise<any>;
-        deleteObject(objectId: string, allVersions?: boolean): Promise<Response>;
-        deleteTree(objectId: any, allVersions?: boolean, unfileObjects?: 'unfile' | 'deletesinglefiled' | 'delete', continueOnFailure?: boolean): Promise<Response>;
+        deleteObject(objectId: string, allVersions?: boolean, forceDelete?: boolean): Promise<Response>;
+        deleteTree(objectId: any, allVersions?: boolean, forceDelete?: boolean, unfileObjects?: 'unfile' | 'deletesinglefiled' | 'delete', continueOnFailure?: boolean): Promise<Response>;
         getContentChanges(changeLogToken?: string, includeProperties?: boolean, includePolicyIds?: boolean, includeACL?: boolean, options?: {
             maxItems?: number;
             succinct?: boolean;
@@ -283,5 +283,31 @@ export declare namespace cmis {
         getAllObjects(ids: Array<any>, options?: {
             succinct?: boolean;
         }): Promise<any>;
+        createHierarchyObject(properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, policies?: string[], addACEs?: {
+            [k: string]: string;
+        }, removeACEs?: {
+            [k: string]: string;
+        }, options?: {}): Promise<any>;
+        assignToHierarchy(objectId: string, properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {}): Promise<any>;
+        addUsersToHierarchy(objectId: string, properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
+        removeUsersFromHierarchy(objectId: string, properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
+        moveHierarchy(properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
+        deleteHierarchyObject(objectId: string, allVersions?: boolean, forceDelete?: boolean): Promise<Response>;
     }
 }
