@@ -96,7 +96,8 @@ export namespace cmis {
       'assignToHierarchy' |
       'addUsersToHierarchy' |
       'removeUsersFromHierarchy' |
-      'moveHierarchy';
+      'moveHierarchy' |
+      'removeFromHierarchy';
 
     cmisselector?:
       'repositoryInfo' |
@@ -1615,5 +1616,19 @@ export namespace cmis {
       return this.get(this.defaultRepository.rootFolderUrl, options);
     };
 
+    /**
+     * removeFromHierarchy
+     */
+    public removeFromHierarchy(
+      objectId: string,
+      properties: { [k: string]: string | string[] | number | number[] | Date | Date[] },
+      options: {
+      } = {}): Promise<any> {
+      let o = options as Options;
+      o.objectId = objectId;
+      this.setProperties(o, properties);
+      o.cmisaction = 'removeFromHierarchy';
+      return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
+    };
   }
 }

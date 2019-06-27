@@ -309,5 +309,8 @@ export declare namespace cmis {
             succinct?: boolean;
         }): Promise<any>;
         deleteHierarchyObject(objectId: string, allVersions?: boolean, forceDelete?: boolean): Promise<Response>;
+        removeFromHierarchy(objectId: string, properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {}): Promise<any>;
     }
 }
