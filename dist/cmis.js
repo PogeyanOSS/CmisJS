@@ -866,6 +866,15 @@ var cmis;
             return this.get(this.defaultRepository.rootFolderUrl, options);
         };
         ;
+        CmisSession.prototype.removeFromHierarchy = function (objectId, properties, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            o.objectId = objectId;
+            this.setProperties(o, properties);
+            o.cmisaction = 'removeFromHierarchy';
+            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+        };
+        ;
         return CmisSession;
     }());
     cmis.CmisSession = CmisSession;
