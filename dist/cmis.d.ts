@@ -312,5 +312,8 @@ export declare namespace cmis {
         removeFromHierarchy(objectId: string, properties: {
             [k: string]: string | string[] | number | number[] | Date | Date[];
         }, options?: {}): Promise<any>;
+        dashboardCount(properties: {
+            [k: string]: string | string[] | number | number[] | Date | Date[];
+        }, options?: {}): Promise<any>;
     }
 }
