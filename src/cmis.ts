@@ -1631,8 +1631,8 @@ export namespace cmis {
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
 
-        /**
-     * dashboardCount
+    /**
+     * executeQuery
      */
     public executeQuery(
       properties: { [k: string]: string | string[] | number | number[] | Date | Date[] },
