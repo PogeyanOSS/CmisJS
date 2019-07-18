@@ -97,8 +97,7 @@ export namespace cmis {
       'addUsersToHierarchy' |
       'removeUsersFromHierarchy' |
       'moveHierarchy' |
-      'removeFromHierarchy' |
-      'dashboardCount';
+      'removeFromHierarchy';
 
     cmisselector?:
       'repositoryInfo' |
@@ -1632,16 +1631,16 @@ export namespace cmis {
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
 
-    /**
+        /**
      * dashboardCount
      */
-    public dashboardCount(
+    public executeQuery(
       properties: { [k: string]: string | string[] | number | number[] | Date | Date[] },
       options: {
       } = {}): Promise<any> {
       let o = options as Options;
       this.setProperties(o, properties);
-      o.cmisaction = 'dashboardCount';
+      o.cmisaction = 'query';
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
   }

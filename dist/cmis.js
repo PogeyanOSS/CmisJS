@@ -872,11 +872,11 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.dashboardCount = function (properties, options) {
+        CmisSession.prototype.executeQuery = function (properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
             this.setProperties(o, properties);
-            o.cmisaction = 'dashboardCount';
+            o.cmisaction = 'query';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
