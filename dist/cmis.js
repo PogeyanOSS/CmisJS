@@ -803,6 +803,14 @@ var cmis;
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
+        CmisSession.prototype.bulkDelete = function (ids, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            o.cmisaction = 'bulkdelete';
+            this.addPropertiesIds(options, ids);
+            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+        };
+        ;
         CmisSession.prototype.createHierarchyObject = function (properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;

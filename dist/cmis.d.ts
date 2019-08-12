@@ -17,14 +17,14 @@ export declare namespace cmis {
         defaultRepository: any;
         repositories: Array<any>;
         private charset;
-        private setProperties(options, properties);
-        private setPolicies(options, policies);
-        private setACEs(options, ACEs, action);
-        private setSecondaryTypeIds(options, secondaryTypeIds, action);
-        private addPropertiesIds(options, ids);
-        private http(method, url, options, multipartData?);
-        private get(url, options?);
-        private post(url, options?, multipartData?);
+        private setProperties;
+        private setPolicies;
+        private setACEs;
+        private setSecondaryTypeIds;
+        private addPropertiesIds;
+        private http;
+        private get;
+        private post;
         constructor(url: string);
         setToken(token: string): CmisSession;
         setCredentials(username: string, password: string): CmisSession;
@@ -281,6 +281,9 @@ export declare namespace cmis {
             [k: string]: string;
         }, propagation?: string): Promise<any>;
         getAllObjects(ids: Array<any>, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
+        bulkDelete(ids: Array<any>, options?: {
             succinct?: boolean;
         }): Promise<any>;
         createHierarchyObject(properties: {
