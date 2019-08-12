@@ -92,6 +92,7 @@ export namespace cmis {
       'removePolicy' |
       'applyACL' |
       'getAllObjects' |
+      'bulkdelete'|
       'createHierarchyObject' |
       'assignToHierarchy' |
       'addUsersToHierarchy' |
@@ -1514,6 +1515,21 @@ export namespace cmis {
       this.addPropertiesIds(options, ids);
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
+
+     /**
+      * bulkDelete
+      */
+     public bulkDelete(
+      ids: Array<any>,
+      options: {
+        succinct?: boolean
+      } = {}): Promise<any> {
+      let o = options as Options;
+      o.cmisaction = 'bulkdelete';
+      this.addPropertiesIds(options, ids);
+      return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
+    };
+
 
     /**
      * createHierarchyObject
