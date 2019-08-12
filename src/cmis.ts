@@ -97,7 +97,8 @@ export namespace cmis {
       'addUsersToHierarchy' |
       'removeUsersFromHierarchy' |
       'moveHierarchy' |
-      'removeFromHierarchy';
+      'removeFromHierarchy' |
+      'bulkdelete';
 
     cmisselector?:
       'repositoryInfo' |
@@ -1628,6 +1629,20 @@ export namespace cmis {
       o.objectId = objectId;
       this.setProperties(o, properties);
       o.cmisaction = 'removeFromHierarchy';
+      return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
+    };
+
+      /**
+      * bulkDelete
+      */
+     public bulkDelete(
+      ids: Array<any>,
+      options: {
+        succinct?: boolean
+      } = {}): Promise<any> {
+      let o = options as Options;
+      o.cmisaction = 'bulkdelete';
+      this.addPropertiesIds(options, ids);
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
   }
