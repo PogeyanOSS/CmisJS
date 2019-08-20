@@ -232,14 +232,13 @@ export namespace cmis {
     * add list of ObjectIds for requests
     */
 
-    private addPropertiesIds(options: Options, ids: Array<any>) {
+    private addPropertiesIds(options: Options, inputIds: Array<any>) {
       var i = 0;
       options['propertyId[' + i + ']'] = "ids";
-      for (let j = 0; j < ids.length; j++) {
-        options['propertyValue[' + i + '][' + j + ']'] = ids[j];
+      for (let j = 0; j < inputIds['ids'].length; j++) {
+        options['propertyValue[' + i + '][' + j + ']'] = inputIds['ids'][j];
       }
     }
-
 
     /**
      * internal method to perform http requests
@@ -1635,7 +1634,7 @@ export namespace cmis {
     /**
       * bulkDelete
       */
-     public bulkDelete(
+    public bulkDelete(
       ids: Array<any>,
       options: {
         succinct?: boolean
