@@ -21,7 +21,7 @@ export declare namespace cmis {
         private setPolicies(options, policies);
         private setACEs(options, ACEs, action);
         private setSecondaryTypeIds(options, secondaryTypeIds, action);
-        private addPropertiesIds(options, inputIds);
+        private addPropertiesIds(options, ids);
         private http(method, url, options, multipartData?);
         private get(url, options?);
         private post(url, options?, multipartData?);
