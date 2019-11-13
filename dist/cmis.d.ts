@@ -21,7 +21,7 @@ export declare namespace cmis {
         private setPolicies(options, policies);
         private setACEs(options, ACEs, action);
         private setSecondaryTypeIds(options, secondaryTypeIds, action);
-        private addPropertiesIds(options, ids);
+        private addPropertiesIds(options, inputIds);
         private http(method, url, options, multipartData?);
         private get(url, options?);
         private post(url, options?, multipartData?);
@@ -315,5 +315,7 @@ export declare namespace cmis {
         bulkDelete(ids: Array<any>, options?: {
             succinct?: boolean;
         }): Promise<any>;
+        resetCache(): Promise<any>;
+        resetCacheByKey(key: string, options?: {}): Promise<any>;
     }
 }

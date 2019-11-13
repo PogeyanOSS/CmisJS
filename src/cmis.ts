@@ -62,7 +62,8 @@ export namespace cmis {
     relationshipDirection?: string;
     policyId?: string;
     ACLPropagation?: string;
-    objectids?: string;
+    objectids?: string
+    key?: string;
 
     cmisaction?: 'query' |
       'createType' |
@@ -121,7 +122,9 @@ export namespace cmis {
       'acl' |
       'contentChanges' |
       'relationships' |
-      'deleteHierarchyObject';
+      'deleteHierarchyObject' |
+      'resetcache' |
+      'resetcachebykey';
   };
 
 
@@ -1643,6 +1646,25 @@ export namespace cmis {
       o.cmisaction = 'bulkdelete';
       this.addPropertiesIds(options, ids);
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
+    };
+
+       /**
+      * resetCache
+      */
+     public resetCache(): Promise<any> {
+      return this.get(this.defaultRepository.repositoryUrl + "/cache", {
+        cmisselector: 'resetcache',
+      }).then(res => res.json());
+    };
+
+        /**
+      * resetCache
+      */
+     public resetCacheByKey(key: string, options: {} = {}): Promise<any> {
+      let o = options as Options;
+      o.key = key
+      o.cmisselector = 'resetcachebykey'
+      return this.get(this.defaultRepository.repositoryUrl + "/cache", o).then(res => res.json());
     };
   }
 }
