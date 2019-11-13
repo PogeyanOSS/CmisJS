@@ -618,4 +618,18 @@ describe('CmisJS library test', function () {
       });
   });
 
+  it('reset cache test', done => {
+    session.resetCache().then(data => {
+      assert(data.status === true, "status should be true");
+      done();
+    });
+  });
+
+  it('reset cache by key test', done => {
+    session.resetCacheByKey("cmis:folder").then(data => {
+      assert(data.status === true, "status should be true");
+      done();
+    });
+  });
+  
 });

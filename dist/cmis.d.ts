@@ -315,5 +315,7 @@ export declare namespace cmis {
         bulkDelete(ids: Array<any>, options?: {
             succinct?: boolean;
         }): Promise<any>;
+        resetCache(): Promise<any>;
+        resetCacheByKey(key: string, options?: {}): Promise<any>;
     }
 }
