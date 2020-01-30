@@ -129,11 +129,11 @@ var cmis;
         /**
         * add list of ObjectIds for requests
         */
-        CmisSession.prototype.addPropertiesIds = function (options, ids) {
+        CmisSession.prototype.addPropertiesIds = function (options, inputIds) {
             var i = 0;
             options['propertyId[' + i + ']'] = "ids";
-            for (var j = 0; j < ids.length; j++) {
-                options['propertyValue[' + i + '][' + j + ']'] = ids[j];
+            for (var j = 0; j < inputIds['ids'].length; j++) {
+                options['propertyValue[' + i + '][' + j + ']'] = inputIds['ids'][j];
             }
         };
         /**
@@ -659,11 +659,9 @@ var cmis;
          * gets document renditions
          */
         CmisSession.prototype.getRenditions = function (objectId, options) {
-            if (options === void 0) {
-                options = {
-                    renditionFilter: '*'
-                };
-            }
+            if (options === void 0) { options = {
+                renditionFilter: '*'
+            }; }
             var o = options;
             o.cmisselector = 'renditions';
             o.objectId = objectId;
@@ -1045,10 +1043,9 @@ var cmis;
         /**
          * createHierarchyObject
          */
-        CmisSession.prototype.createHierarchyObject = function (folderId, properties, policies, addACEs, removeACEs, options) {
+        CmisSession.prototype.createHierarchyObject = function (properties, policies, addACEs, removeACEs, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = folderId;
             this.setProperties(o, properties);
             if (policies) {
                 this.setPolicies(o, policies);
@@ -1066,14 +1063,11 @@ var cmis;
         /**
          * assignToHierarchy
          */
-        CmisSession.prototype.assignToHierarchy = function (folderId, properties, addACEs, options) {
+        CmisSession.prototype.assignToHierarchy = function (objectId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = folderId;
+            o.objectId = objectId;
             this.setProperties(o, properties);
-            if (addACEs) {
-                this.setACEs(o, addACEs, 'add');
-            }
             o.cmisaction = 'assignToHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
@@ -1081,22 +1075,22 @@ var cmis;
         /**
          * addUsersToHierarchy
          */
-        CmisSession.prototype.addUsersToHierarchy = function (folderId, properties, options) {
+        CmisSession.prototype.addUsersToHierarchy = function (objectId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = folderId;
-            this.setProperties(o, properties);
+            o.objectId = objectId;
             o.cmisaction = 'addUsersToHierarchy';
-            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+            this.setProperties(o, properties);
+            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
         };
         ;
         /**
          * removeUsersFromHierarchy
          */
-        CmisSession.prototype.removeUsersFromHierarchy = function (folderId, properties, options) {
+        CmisSession.prototype.removeUsersFromHierarchy = function (objectId, properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = folderId;
+            o.objectId = objectId;
             this.setProperties(o, properties);
             o.cmisaction = 'removeUsersFromHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
@@ -1105,14 +1099,10 @@ var cmis;
         /**
          * moveHierarchy
          */
-        CmisSession.prototype.moveHierarchy = function (folderId, properties, addACEs, options) {
+        CmisSession.prototype.moveHierarchy = function (properties, options) {
             if (options === void 0) { options = {}; }
             var o = options;
-            o.objectId = folderId;
             this.setProperties(o, properties);
-            if (addACEs) {
-                this.setACEs(o, addACEs, 'add');
-            }
             o.cmisaction = 'moveHierarchy';
             return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
@@ -1129,6 +1119,49 @@ var cmis;
             options.allVersions = allVersions;
             options.forceDelete = forceDelete;
             return this.get(this.defaultRepository.rootFolderUrl, options);
+        };
+        ;
+        /**
+         * removeFromHierarchy
+         */
+        CmisSession.prototype.removeFromHierarchy = function (objectId, properties, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            o.objectId = objectId;
+            this.setProperties(o, properties);
+            o.cmisaction = 'removeFromHierarchy';
+            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+          * bulkDelete
+          */
+        CmisSession.prototype.bulkDelete = function (ids, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            o.cmisaction = 'bulkdelete';
+            this.addPropertiesIds(options, ids);
+            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+       * resetCache
+       */
+        CmisSession.prototype.resetCache = function () {
+            return this.get(this.defaultRepository.repositoryUrl + "/cache", {
+                cmisselector: 'resetcache'
+            }).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+      * resetCache
+      */
+        CmisSession.prototype.resetCacheByKey = function (key, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            o.key = key;
+            o.cmisselector = 'resetcachebykey';
+            return this.get(this.defaultRepository.repositoryUrl + "/cache", o).then(function (res) { return res.json(); });
         };
         ;
         return CmisSession;
