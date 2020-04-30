@@ -132,8 +132,8 @@ var cmis;
         CmisSession.prototype.addPropertiesIds = function (options, inputIds) {
             var i = 0;
             options['propertyId[' + i + ']'] = "ids";
-            for (var j = 0; j < inputIds['ids'].length; j++) {
-                options['propertyValue[' + i + '][' + j + ']'] = inputIds['ids'][j];
+            for (var j = 0; j < inputIds.length; j++) {
+                options['propertyValue[' + i + '][' + j + ']'] = inputIds[j];
             }
         };
         /**

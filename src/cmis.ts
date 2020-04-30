@@ -238,8 +238,8 @@ export namespace cmis {
     private addPropertiesIds(options: Options, inputIds: Array<any>) {
       var i = 0;
       options['propertyId[' + i + ']'] = "ids";
-      for (let j = 0; j < inputIds['ids'].length; j++) {
-        options['propertyValue[' + i + '][' + j + ']'] = inputIds['ids'][j];
+      for (let j = 0; j < inputIds.length; j++) {
+        options['propertyValue[' + i + '][' + j + ']'] = inputIds[j];
       }
     }
 

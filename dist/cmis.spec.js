@@ -541,5 +541,17 @@ describe('CmisJS library test', function () {
             done();
         });
     });
+    it('reset cache test', function (done) {
+        session.resetCache().then(function (data) {
+            chai_1.assert(data.status === true, "status should be true");
+            done();
+        });
+    });
+    it('reset cache by key test', function (done) {
+        session.resetCacheByKey("cmis:folder").then(function (data) {
+            chai_1.assert(data.status === true, "status should be true");
+            done();
+        });
+    });
 });
 //# sourceMappingURL=cmis.spec.js.map
