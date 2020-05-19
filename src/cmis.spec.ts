@@ -256,14 +256,14 @@ describe('CmisJS library test', function () {
     });
   });
   it('should get fetchAllObjects ', done => {
-    session.getAllObjects([randomFolderId,firstChildId,secondChildId]) .then(data => {
+    session.getAllObjects([randomFolderId, firstChildId, secondChildId]).then(data => {
       console.log(data)
-         assert(data.objects[0].object.succinctProperties['cmis:objectId']== randomFolderId);
-         assert(data.objects[1].object.succinctProperties['cmis:objectId']== firstChildId);
-         assert(data.objects[2].object.succinctProperties['cmis:objectId']== secondChildId);
-          done();
-        });
-      });
+      assert(data.objects[0].object.succinctProperties['cmis:objectId'] == randomFolderId);
+      assert(data.objects[1].object.succinctProperties['cmis:objectId'] == firstChildId);
+      assert(data.objects[2].object.succinctProperties['cmis:objectId'] == secondChildId);
+      done();
+    });
+  });
 
   it('should return folder tree', done => {
     session.getFolderTree(randomFolderId).then(data => {
@@ -489,7 +489,7 @@ describe('CmisJS library test', function () {
       });
   });
 
-  
+
   it('should get latest version of a version series', done => {
     if (!docId || !versionSeriesId) {
       console.log("skipping")
@@ -511,7 +511,7 @@ describe('CmisJS library test', function () {
 
   it('should get object versions', done => {
     session.getAllVersions(docId).then(data => {
-      assert(data[0].succinctProperties['cmis:versionLabel'] !== undefined,'version label should be defined');
+      assert(data[0].succinctProperties['cmis:versionLabel'] !== undefined, 'version label should be defined');
       done();
     }).catch(err => {
       if (err.response) {
@@ -631,5 +631,76 @@ describe('CmisJS library test', function () {
       done();
     });
   });
-  
+
+  it('bulk insert tests', done => {
+    let props: any = {};
+    let itemList: any[] = new Array();
+    let docList: any[] = new Array();
+    let folList: any[] = new Array();
+    let polList: any[] = new Array();
+    let relList: any[] = new Array();
+    var aces = {}
+    aces["UserA"] = ['cmis:all'];
+    for (let i = 0; i < 10; i++) {
+      let input: any = { "cmis:objectId": "Item_" + i, "cmis:name": "Item_" + i, "cmis:objectTypeId": "cmis:item" }
+      input["addAces"] = aces;
+      input["policies"] = ["policy123"];
+      itemList.push(input);
+    }
+    itemList.push({ "source_table": "cmis:folder", "target_table": "cmis:document", "cmis:name": "folder_document", "cmis:objectTypeId": "cmis_ext:relationmd" })
+    for (let i = 0; i < 10; i++) {
+      let input: any = { "cmis:objectId": "Doc_" + i, "cmis:name": "Doc_" + i, "cmis:objectTypeId": "cmis:document" }
+      input["addAces"] = aces;
+      input["policies"] = ["policy123"];
+      docList.push(input)
+    }
+    for (let i = 0; i < 10; i++) {
+      let input: any = { "cmis:objectId": "Fol_" + i, "cmis:name": "Fol_" + i, "cmis:objectTypeId": "cmis:folder" }
+      input["addAces"] = aces;
+      input["policies"] = ["policy123"];
+      folList.push(input)
+    }
+    for (let i = 0; i < 10; i++) {
+      let input: any = { "cmis:objectId": "Pol_" + i, "cmis:name": "Pol_" + i, "cmis:objectTypeId": "cmis:policy" }
+      input["addAces"] = aces;
+      input["policies"] = ["policy123"];
+      polList.push(input)
+    }
+    for (let i = 0; i < 10; i++) {
+      let input: any = { "relation_name": "folder_document", "cmis:name": "Rel_" + i, "cmis:objectTypeId": "cmis_ext:relationship", "cmis:sourceId": "Fol_" + i, "cmis:targetId": "Doc_" + i }
+      input["addAces"] = aces;
+      input["policies"] = ["policy123"];
+      relList.push(input)
+    }
+    props["createItem"] = itemList;
+    props["createDocument"] = docList;
+    props["createFolder"] = folList;
+    props["createPolicy"] = polList;
+    props["createRelationship"] = relList;
+    session.bulkInsert(props).then(data => {
+      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
+      done();
+    });
+  });
+
+  it('bulk update tests', done => {
+    let props: any = {};
+    let updateList: any[] = new Array();
+    updateList.push({ "cmis:objectId": "Item_0", "cmis:name": "Item_Updated", "cmis:objectTypeId": "cmis:item" });
+    updateList.push({ "cmis:objectId": "Doc_0", "cmis:name": "Doc_Updated", "cmis:objectTypeId": "cmis:document" });
+    updateList.push({ "cmis:objectId": "Fol_0", "cmis:name": "Fol_Updated", "cmis:objectTypeId": "cmis:folder" });
+    updateList.push({ "cmis:objectId": "Pol_0", "cmis:name": "Pol_Updated", "cmis:objectTypeId": "cmis:policy" });
+
+    props["update"] = updateList;
+
+    session.bulkUpdate(props).then(data => {
+      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_Updated", "name should be Item_Updated");
+      assert(data.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
+      assert(data.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
+      assert(data.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
+
+      done();
+    });
+  });
+
 });
