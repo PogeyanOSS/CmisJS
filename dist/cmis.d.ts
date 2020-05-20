@@ -317,5 +317,11 @@ export declare namespace cmis {
         }): Promise<any>;
         resetCache(): Promise<any>;
         resetCacheByKey(key: string, options?: {}): Promise<any>;
+        bulkInsert(properties: any, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
+        bulkUpdate(properties: any, options?: {
+            succinct?: boolean;
+        }): Promise<any>;
     }
 }

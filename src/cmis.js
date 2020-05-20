@@ -97,8 +97,10 @@ var cmis;
          * format policies for requests
          */
         CmisSession.prototype.setPolicies = function (options, policies) {
-            for (var i = 0; i < policies.length; i++) {
-                options['policy[' + i + ']'] = policies[i];
+            if (policies != null && policies != undefined && policies.length > 0) {
+                for (var i = 0; i < policies.length; i++) {
+                    options['policy[' + i + ']'] = policies[i];
+                }
             }
         };
         ;
@@ -180,7 +182,12 @@ var cmis;
                 }
                 formData.append('content', content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
                 for (var k in body) {
-                    formData.append(k, '' + body[k]);
+                    if (Array.isArray(body[k])) {
+                        formData.append(k, JSON.stringify(body[k]));
+                    }
+                    else {
+                        formData.append(k, '' + body[k]);
+                    }
                 }
                 if (this.charset) {
                     formData.append('_charset_', this.charset);
@@ -225,8 +232,8 @@ var cmis;
             return this.http('POST', url, options, multipartData);
         };
         /**
-         * sets token for authentication
-         */
+        * sets token for authentication
+        */
         CmisSession.prototype.setToken = function (token) {
             this.token = token;
             return this;
@@ -1162,6 +1169,133 @@ var cmis;
             o.key = key;
             o.cmisselector = 'resetcachebykey';
             return this.get(this.defaultRepository.repositoryUrl + "/cache", o).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+      * bulkInsert
+      */
+        CmisSession.prototype.bulkInsert = function (properties, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            properties["cmisaction"] = 'bulkinsert';
+            var createIteList = new Array();
+            var createDocList = new Array();
+            var createFolList = new Array();
+            var createPolList = new Array();
+            var createRelList = new Array();
+            properties["createItem"].forEach(function (itemInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                var addAces = itemInput["addAces"];
+                var removeAces = itemInput["removeAces"];
+                var policies = itemInput["policies"];
+                cmisClass.setACEs(dop, addAces, "add");
+                delete itemInput["addAces"];
+                cmisClass.setACEs(dop, removeAces, "remove");
+                delete itemInput["removeAces"];
+                cmisClass.setPolicies(dop, policies);
+                delete itemInput["policies"];
+                cmisClass.setProperties(dop, itemInput);
+                createIteList.push(dop);
+            });
+            properties["createDocument"].forEach(function (docInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                var addAces = docInput["addAces"];
+                var removeAces = docInput["removeAces"];
+                var policies = docInput["policies"];
+                cmisClass.setACEs(dop, addAces, "add");
+                delete docInput["addAces"];
+                cmisClass.setACEs(dop, removeAces, "remove");
+                delete docInput["removeAces"];
+                cmisClass.setPolicies(dop, policies);
+                delete docInput["policies"];
+                cmisClass.setProperties(dop, docInput);
+                createDocList.push(dop);
+            });
+            properties["createFolder"].forEach(function (folInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                var addAces = folInput["addAces"];
+                var removeAces = folInput["removeAces"];
+                var policies = folInput["policies"];
+                cmisClass.setACEs(dop, addAces, "add");
+                delete folInput["addAces"];
+                cmisClass.setACEs(dop, removeAces, "remove");
+                delete folInput["removeAces"];
+                cmisClass.setPolicies(dop, policies);
+                delete folInput["policies"];
+                cmisClass.setProperties(dop, folInput);
+                createFolList.push(dop);
+            });
+            properties["createPolicy"].forEach(function (polInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                var addAces = polInput["addAces"];
+                var removeAces = polInput["removeAces"];
+                var policies = polInput["policies"];
+                cmisClass.setACEs(dop, addAces, "add");
+                delete polInput["addAces"];
+                cmisClass.setACEs(dop, removeAces, "remove");
+                delete polInput["removeAces"];
+                cmisClass.setPolicies(dop, policies);
+                delete polInput["policies"];
+                cmisClass.setProperties(dop, polInput);
+                createPolList.push(dop);
+            });
+            properties["createRelationship"].forEach(function (relInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                var addAces = relInput["addAces"];
+                var removeAces = relInput["removeAces"];
+                var policies = relInput["policies"];
+                cmisClass.setACEs(dop, addAces, "add");
+                delete relInput["addAces"];
+                cmisClass.setACEs(dop, removeAces, "remove");
+                delete relInput["removeAces"];
+                cmisClass.setPolicies(dop, policies);
+                delete relInput["policies"];
+                cmisClass.setProperties(dop, relInput);
+                createRelList.push(dop);
+            });
+            delete properties["createItem"];
+            delete properties["createDocument"];
+            delete properties["createFolder"];
+            delete properties["createPolicy"];
+            delete properties["createRelationship"];
+            properties["createItem"] = createIteList;
+            properties["createDocument"] = createDocList;
+            properties["createFolder"] = createFolList;
+            properties["createPolicy"] = createPolList;
+            properties["createRelationship"] = createRelList;
+            return this.post(this.defaultRepository.repositoryUrl, properties, {
+                content: 'default',
+                filename: 'default.txt',
+                mimeTypeExtension: 'text/plain'
+            }).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+      * bulkUpdate
+      */
+        CmisSession.prototype.bulkUpdate = function (properties, options) {
+            if (options === void 0) { options = {}; }
+            var o = options;
+            properties["cmisaction"] = 'bulkupdateprops';
+            var updateList = new Array();
+            properties["update"].forEach(function (updateInput) {
+                var dop = {};
+                var cmisClass = new cmis.CmisSession(null);
+                cmisClass.setProperties(dop, updateInput);
+                updateList.push(dop);
+            });
+            delete properties["update"];
+            properties["update"] = updateList;
+            return this.post(this.defaultRepository.repositoryUrl, properties, {
+                content: 'default',
+                filename: 'default.txt',
+                mimeTypeExtension: 'text/plain'
+            }).then(function (res) { return res.json(); });
         };
         ;
         return CmisSession;

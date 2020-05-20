@@ -99,7 +99,9 @@ export namespace cmis {
       'removeUsersFromHierarchy' |
       'moveHierarchy' |
       'removeFromHierarchy' |
-      'bulkdelete';
+      'bulkdelete' |
+      'bulkinsert' |
+      'bulkupdateprops';
 
     cmisselector?:
       'repositoryInfo' |
@@ -203,8 +205,10 @@ export namespace cmis {
      * format policies for requests
      */
     private setPolicies(options: Options, policies: Array<string>) {
-      for (let i = 0; i < policies.length; i++) {
-        options['policy[' + i + ']'] = policies[i];
+      if (policies != null && policies != undefined && policies.length > 0) {
+        for (let i = 0; i < policies.length; i++) {
+          options['policy[' + i + ']'] = policies[i];
+        }
       }
     };
 
@@ -299,7 +303,11 @@ export namespace cmis {
           multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
 
         for (let k in body) {
-          formData.append(k, '' + body[k]);
+          if (Array.isArray(body[k])) {
+            formData.append(k, JSON.stringify(body[k]));
+          } else {
+            formData.append(k, '' + body[k]);
+          }
         }
 
         if (this.charset) {
@@ -366,10 +374,9 @@ export namespace cmis {
       this.url = url;
     }
 
-
     /**
-     * sets token for authentication
-     */
+    * sets token for authentication
+    */
     public setToken(token: string): CmisSession {
       this.token = token;
       return this;
@@ -1648,23 +1655,163 @@ export namespace cmis {
       return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
 
-       /**
-      * resetCache
-      */
-     public resetCache(): Promise<any> {
+    /**
+   * resetCache
+   */
+    public resetCache(): Promise<any> {
       return this.get(this.defaultRepository.repositoryUrl + "/cache", {
         cmisselector: 'resetcache',
       }).then(res => res.json());
     };
 
-        /**
-      * resetCache
-      */
-     public resetCacheByKey(key: string, options: {} = {}): Promise<any> {
+    /**
+  * resetCache
+  */
+    public resetCacheByKey(key: string, options: {} = {}): Promise<any> {
       let o = options as Options;
       o.key = key
       o.cmisselector = 'resetcachebykey'
       return this.get(this.defaultRepository.repositoryUrl + "/cache", o).then(res => res.json());
+    };
+
+    /**
+  * bulkInsert
+  */
+    public bulkInsert(
+      properties: any,
+      options: {
+        succinct?: boolean
+      } = {}): Promise<any> {
+      let o = options as Options;
+      properties["cmisaction"] = 'bulkinsert';
+
+      let createIteList: any[] = new Array();
+      let createDocList: any[] = new Array();
+      let createFolList: any[] = new Array();
+      let createPolList: any[] = new Array();
+      let createRelList: any[] = new Array();
+
+      properties["createItem"].forEach(itemInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        let addAces = itemInput["addAces"];
+        let removeAces = itemInput["removeAces"];
+        let policies = itemInput["policies"];
+        cmisClass.setACEs(dop, addAces, "add");
+        delete itemInput["addAces"];
+        cmisClass.setACEs(dop, removeAces, "remove");
+        delete itemInput["removeAces"];
+        cmisClass.setPolicies(dop, policies);
+        delete itemInput["policies"];
+        cmisClass.setProperties(dop, itemInput);
+        createIteList.push(dop)
+      });
+      properties["createDocument"].forEach(docInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        let addAces = docInput["addAces"];
+        let removeAces = docInput["removeAces"];
+        let policies = docInput["policies"];
+        cmisClass.setACEs(dop, addAces, "add");
+        delete docInput["addAces"];
+        cmisClass.setACEs(dop, removeAces, "remove");
+        delete docInput["removeAces"];
+        cmisClass.setPolicies(dop, policies);
+        delete docInput["policies"];
+        cmisClass.setProperties(dop, docInput);
+        createDocList.push(dop)
+      });
+      properties["createFolder"].forEach(folInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        let addAces = folInput["addAces"];
+        let removeAces = folInput["removeAces"];
+        let policies = folInput["policies"];
+        cmisClass.setACEs(dop, addAces, "add");
+        delete folInput["addAces"];
+        cmisClass.setACEs(dop, removeAces, "remove");
+        delete folInput["removeAces"];
+        cmisClass.setPolicies(dop, policies);
+        delete folInput["policies"];
+        cmisClass.setProperties(dop, folInput);
+        createFolList.push(dop)
+      });
+      properties["createPolicy"].forEach(polInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        let addAces = polInput["addAces"];
+        let removeAces = polInput["removeAces"];
+        let policies = polInput["policies"];
+        cmisClass.setACEs(dop, addAces, "add");
+        delete polInput["addAces"];
+        cmisClass.setACEs(dop, removeAces, "remove");
+        delete polInput["removeAces"];
+        cmisClass.setPolicies(dop, policies);
+        delete polInput["policies"];
+        cmisClass.setProperties(dop, polInput);
+        createPolList.push(dop)
+      });
+      properties["createRelationship"].forEach(relInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        let addAces = relInput["addAces"];
+        let removeAces = relInput["removeAces"];
+        let policies = relInput["policies"];
+        cmisClass.setACEs(dop, addAces, "add");
+        delete relInput["addAces"];
+        cmisClass.setACEs(dop, removeAces, "remove");
+        delete relInput["removeAces"];
+        cmisClass.setPolicies(dop, policies);
+        delete relInput["policies"];
+        cmisClass.setProperties(dop, relInput);
+        createRelList.push(dop)
+      });
+
+      delete properties["createItem"];
+      delete properties["createDocument"];
+      delete properties["createFolder"];
+      delete properties["createPolicy"];
+      delete properties["createRelationship"];
+      properties["createItem"] = createIteList;
+      properties["createDocument"] = createDocList;
+      properties["createFolder"] = createFolList;
+      properties["createPolicy"] = createPolList;
+      properties["createRelationship"] = createRelList;
+
+      return this.post(this.defaultRepository.repositoryUrl, properties, {
+        content: 'default',
+        filename: 'default.txt',
+        mimeTypeExtension: 'text/plain'
+      }).then(res => res.json());
+    };
+    /**
+  * bulkUpdate
+  */
+    public bulkUpdate(
+      properties: any,
+      options: {
+        succinct?: boolean
+      } = {}): Promise<any> {
+      let o = options as Options;
+      properties["cmisaction"] = 'bulkupdateprops';
+
+      let updateList: any[] = new Array();
+
+      properties["update"].forEach(updateInput => {
+        let dop = {};
+        let cmisClass = new cmis.CmisSession(null);
+        cmisClass.setProperties(dop, updateInput);
+        updateList.push(dop)
+      });
+
+      delete properties["update"];
+      properties["update"] = updateList;
+
+      return this.post(this.defaultRepository.repositoryUrl, properties, {
+        content: 'default',
+        filename: 'default.txt',
+        mimeTypeExtension: 'text/plain'
+      }).then(res => res.json());
     };
   }
 }
