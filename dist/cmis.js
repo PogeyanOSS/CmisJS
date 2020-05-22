@@ -910,86 +910,96 @@ var cmis;
             var createFolList = new Array();
             var createPolList = new Array();
             var createRelList = new Array();
-            properties["createItem"].forEach(function (itemInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                var addAces = itemInput["addAces"];
-                var removeAces = itemInput["removeAces"];
-                var policies = itemInput["policies"];
-                cmisClass.setACEs(dop, addAces, "add");
-                delete itemInput["addAces"];
-                cmisClass.setACEs(dop, removeAces, "remove");
-                delete itemInput["removeAces"];
-                cmisClass.setPolicies(dop, policies);
-                delete itemInput["policies"];
-                cmisClass.setProperties(dop, itemInput);
-                createIteList.push(dop);
-            });
-            properties["createDocument"].forEach(function (docInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                var addAces = docInput["addAces"];
-                var removeAces = docInput["removeAces"];
-                var policies = docInput["policies"];
-                cmisClass.setACEs(dop, addAces, "add");
-                delete docInput["addAces"];
-                cmisClass.setACEs(dop, removeAces, "remove");
-                delete docInput["removeAces"];
-                cmisClass.setPolicies(dop, policies);
-                delete docInput["policies"];
-                cmisClass.setProperties(dop, docInput);
-                createDocList.push(dop);
-            });
-            properties["createFolder"].forEach(function (folInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                var addAces = folInput["addAces"];
-                var removeAces = folInput["removeAces"];
-                var policies = folInput["policies"];
-                cmisClass.setACEs(dop, addAces, "add");
-                delete folInput["addAces"];
-                cmisClass.setACEs(dop, removeAces, "remove");
-                delete folInput["removeAces"];
-                cmisClass.setPolicies(dop, policies);
-                delete folInput["policies"];
-                cmisClass.setProperties(dop, folInput);
-                createFolList.push(dop);
-            });
-            properties["createPolicy"].forEach(function (polInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                var addAces = polInput["addAces"];
-                var removeAces = polInput["removeAces"];
-                var policies = polInput["policies"];
-                cmisClass.setACEs(dop, addAces, "add");
-                delete polInput["addAces"];
-                cmisClass.setACEs(dop, removeAces, "remove");
-                delete polInput["removeAces"];
-                cmisClass.setPolicies(dop, policies);
-                delete polInput["policies"];
-                cmisClass.setProperties(dop, polInput);
-                createPolList.push(dop);
-            });
-            properties["createRelationship"].forEach(function (relInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                var addAces = relInput["addAces"];
-                var removeAces = relInput["removeAces"];
-                var policies = relInput["policies"];
-                cmisClass.setACEs(dop, addAces, "add");
-                delete relInput["addAces"];
-                cmisClass.setACEs(dop, removeAces, "remove");
-                delete relInput["removeAces"];
-                cmisClass.setPolicies(dop, policies);
-                delete relInput["policies"];
-                cmisClass.setProperties(dop, relInput);
-                createRelList.push(dop);
-            });
-            delete properties["createItem"];
-            delete properties["createDocument"];
-            delete properties["createFolder"];
-            delete properties["createPolicy"];
-            delete properties["createRelationship"];
+            if (properties["createItem"] != undefined && properties["createItem"] != null) {
+                properties["createItem"].forEach(function (itemInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    var addAces = itemInput["addAces"];
+                    var removeAces = itemInput["removeAces"];
+                    var policies = itemInput["policies"];
+                    cmisClass.setACEs(dop, addAces, "add");
+                    delete itemInput["addAces"];
+                    cmisClass.setACEs(dop, removeAces, "remove");
+                    delete itemInput["removeAces"];
+                    cmisClass.setPolicies(dop, policies);
+                    delete itemInput["policies"];
+                    cmisClass.setProperties(dop, itemInput);
+                    createIteList.push(dop);
+                });
+                delete properties["createItem"];
+            }
+            if (properties["createDocument"] != undefined && properties["createDocument"] != null) {
+                properties["createDocument"].forEach(function (docInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    var addAces = docInput["addAces"];
+                    var removeAces = docInput["removeAces"];
+                    var policies = docInput["policies"];
+                    cmisClass.setACEs(dop, addAces, "add");
+                    delete docInput["addAces"];
+                    cmisClass.setACEs(dop, removeAces, "remove");
+                    delete docInput["removeAces"];
+                    cmisClass.setPolicies(dop, policies);
+                    delete docInput["policies"];
+                    cmisClass.setProperties(dop, docInput);
+                    createDocList.push(dop);
+                });
+                delete properties["createDocument"];
+            }
+            if (properties["createFolder"] != undefined && properties["createFolder"] != null) {
+                properties["createFolder"].forEach(function (folInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    var addAces = folInput["addAces"];
+                    var removeAces = folInput["removeAces"];
+                    var policies = folInput["policies"];
+                    cmisClass.setACEs(dop, addAces, "add");
+                    delete folInput["addAces"];
+                    cmisClass.setACEs(dop, removeAces, "remove");
+                    delete folInput["removeAces"];
+                    cmisClass.setPolicies(dop, policies);
+                    delete folInput["policies"];
+                    cmisClass.setProperties(dop, folInput);
+                    createFolList.push(dop);
+                });
+                delete properties["createFolder"];
+            }
+            if (properties["createPolicy"] != undefined && properties["createPolicy"] != null) {
+                properties["createPolicy"].forEach(function (polInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    var addAces = polInput["addAces"];
+                    var removeAces = polInput["removeAces"];
+                    var policies = polInput["policies"];
+                    cmisClass.setACEs(dop, addAces, "add");
+                    delete polInput["addAces"];
+                    cmisClass.setACEs(dop, removeAces, "remove");
+                    delete polInput["removeAces"];
+                    cmisClass.setPolicies(dop, policies);
+                    delete polInput["policies"];
+                    cmisClass.setProperties(dop, polInput);
+                    createPolList.push(dop);
+                });
+                delete properties["createPolicy"];
+            }
+            if (properties["createRelationship"] != undefined && properties["createRelationship"] != null) {
+                properties["createRelationship"].forEach(function (relInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    var addAces = relInput["addAces"];
+                    var removeAces = relInput["removeAces"];
+                    var policies = relInput["policies"];
+                    cmisClass.setACEs(dop, addAces, "add");
+                    delete relInput["addAces"];
+                    cmisClass.setACEs(dop, removeAces, "remove");
+                    delete relInput["removeAces"];
+                    cmisClass.setPolicies(dop, policies);
+                    delete relInput["policies"];
+                    cmisClass.setProperties(dop, relInput);
+                    createRelList.push(dop);
+                });
+                delete properties["createRelationship"];
+            }
             properties["createItem"] = createIteList;
             properties["createDocument"] = createDocList;
             properties["createFolder"] = createFolList;
@@ -1007,13 +1017,15 @@ var cmis;
             var o = options;
             properties["cmisaction"] = 'bulkupdateprops';
             var updateList = new Array();
-            properties["update"].forEach(function (updateInput) {
-                var dop = {};
-                var cmisClass = new cmis.CmisSession(null);
-                cmisClass.setProperties(dop, updateInput);
-                updateList.push(dop);
-            });
-            delete properties["update"];
+            if (properties["update"] != undefined && properties["update"] != null) {
+                properties["update"].forEach(function (updateInput) {
+                    var dop = {};
+                    var cmisClass = new cmis.CmisSession(null);
+                    cmisClass.setProperties(dop, updateInput);
+                    updateList.push(dop);
+                });
+                delete properties["update"];
+            }
             properties["update"] = updateList;
             return this.post(this.defaultRepository.repositoryUrl, properties, {
                 content: 'default',

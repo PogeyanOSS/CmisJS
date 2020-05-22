@@ -1691,87 +1691,97 @@ export namespace cmis {
       let createPolList: any[] = new Array();
       let createRelList: any[] = new Array();
 
-      properties["createItem"].forEach(itemInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        let addAces = itemInput["addAces"];
-        let removeAces = itemInput["removeAces"];
-        let policies = itemInput["policies"];
-        cmisClass.setACEs(dop, addAces, "add");
-        delete itemInput["addAces"];
-        cmisClass.setACEs(dop, removeAces, "remove");
-        delete itemInput["removeAces"];
-        cmisClass.setPolicies(dop, policies);
-        delete itemInput["policies"];
-        cmisClass.setProperties(dop, itemInput);
-        createIteList.push(dop)
-      });
-      properties["createDocument"].forEach(docInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        let addAces = docInput["addAces"];
-        let removeAces = docInput["removeAces"];
-        let policies = docInput["policies"];
-        cmisClass.setACEs(dop, addAces, "add");
-        delete docInput["addAces"];
-        cmisClass.setACEs(dop, removeAces, "remove");
-        delete docInput["removeAces"];
-        cmisClass.setPolicies(dop, policies);
-        delete docInput["policies"];
-        cmisClass.setProperties(dop, docInput);
-        createDocList.push(dop)
-      });
-      properties["createFolder"].forEach(folInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        let addAces = folInput["addAces"];
-        let removeAces = folInput["removeAces"];
-        let policies = folInput["policies"];
-        cmisClass.setACEs(dop, addAces, "add");
-        delete folInput["addAces"];
-        cmisClass.setACEs(dop, removeAces, "remove");
-        delete folInput["removeAces"];
-        cmisClass.setPolicies(dop, policies);
-        delete folInput["policies"];
-        cmisClass.setProperties(dop, folInput);
-        createFolList.push(dop)
-      });
-      properties["createPolicy"].forEach(polInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        let addAces = polInput["addAces"];
-        let removeAces = polInput["removeAces"];
-        let policies = polInput["policies"];
-        cmisClass.setACEs(dop, addAces, "add");
-        delete polInput["addAces"];
-        cmisClass.setACEs(dop, removeAces, "remove");
-        delete polInput["removeAces"];
-        cmisClass.setPolicies(dop, policies);
-        delete polInput["policies"];
-        cmisClass.setProperties(dop, polInput);
-        createPolList.push(dop)
-      });
-      properties["createRelationship"].forEach(relInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        let addAces = relInput["addAces"];
-        let removeAces = relInput["removeAces"];
-        let policies = relInput["policies"];
-        cmisClass.setACEs(dop, addAces, "add");
-        delete relInput["addAces"];
-        cmisClass.setACEs(dop, removeAces, "remove");
-        delete relInput["removeAces"];
-        cmisClass.setPolicies(dop, policies);
-        delete relInput["policies"];
-        cmisClass.setProperties(dop, relInput);
-        createRelList.push(dop)
-      });
+      if (properties["createItem"] != undefined && properties["createItem"] != null) {
+        properties["createItem"].forEach(itemInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          let addAces = itemInput["addAces"];
+          let removeAces = itemInput["removeAces"];
+          let policies = itemInput["policies"];
+          cmisClass.setACEs(dop, addAces, "add");
+          delete itemInput["addAces"];
+          cmisClass.setACEs(dop, removeAces, "remove");
+          delete itemInput["removeAces"];
+          cmisClass.setPolicies(dop, policies);
+          delete itemInput["policies"];
+          cmisClass.setProperties(dop, itemInput);
+          createIteList.push(dop)
+        });
+        delete properties["createItem"];
+      }
 
-      delete properties["createItem"];
-      delete properties["createDocument"];
-      delete properties["createFolder"];
-      delete properties["createPolicy"];
-      delete properties["createRelationship"];
+      if (properties["createDocument"] != undefined && properties["createDocument"] != null) {
+        properties["createDocument"].forEach(docInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          let addAces = docInput["addAces"];
+          let removeAces = docInput["removeAces"];
+          let policies = docInput["policies"];
+          cmisClass.setACEs(dop, addAces, "add");
+          delete docInput["addAces"];
+          cmisClass.setACEs(dop, removeAces, "remove");
+          delete docInput["removeAces"];
+          cmisClass.setPolicies(dop, policies);
+          delete docInput["policies"];
+          cmisClass.setProperties(dop, docInput);
+          createDocList.push(dop)
+        });
+        delete properties["createDocument"];
+      }
+      if (properties["createFolder"] != undefined && properties["createFolder"] != null) {
+        properties["createFolder"].forEach(folInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          let addAces = folInput["addAces"];
+          let removeAces = folInput["removeAces"];
+          let policies = folInput["policies"];
+          cmisClass.setACEs(dop, addAces, "add");
+          delete folInput["addAces"];
+          cmisClass.setACEs(dop, removeAces, "remove");
+          delete folInput["removeAces"];
+          cmisClass.setPolicies(dop, policies);
+          delete folInput["policies"];
+          cmisClass.setProperties(dop, folInput);
+          createFolList.push(dop)
+        });
+        delete properties["createFolder"];
+      }
+      if (properties["createPolicy"] != undefined && properties["createPolicy"] != null) {
+        properties["createPolicy"].forEach(polInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          let addAces = polInput["addAces"];
+          let removeAces = polInput["removeAces"];
+          let policies = polInput["policies"];
+          cmisClass.setACEs(dop, addAces, "add");
+          delete polInput["addAces"];
+          cmisClass.setACEs(dop, removeAces, "remove");
+          delete polInput["removeAces"];
+          cmisClass.setPolicies(dop, policies);
+          delete polInput["policies"];
+          cmisClass.setProperties(dop, polInput);
+          createPolList.push(dop)
+        });
+        delete properties["createPolicy"];
+      }
+      if (properties["createRelationship"] != undefined && properties["createRelationship"] != null) {
+        properties["createRelationship"].forEach(relInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          let addAces = relInput["addAces"];
+          let removeAces = relInput["removeAces"];
+          let policies = relInput["policies"];
+          cmisClass.setACEs(dop, addAces, "add");
+          delete relInput["addAces"];
+          cmisClass.setACEs(dop, removeAces, "remove");
+          delete relInput["removeAces"];
+          cmisClass.setPolicies(dop, policies);
+          delete relInput["policies"];
+          cmisClass.setProperties(dop, relInput);
+          createRelList.push(dop)
+        });
+        delete properties["createRelationship"];
+      }
       properties["createItem"] = createIteList;
       properties["createDocument"] = createDocList;
       properties["createFolder"] = createFolList;
@@ -1796,15 +1806,15 @@ export namespace cmis {
       properties["cmisaction"] = 'bulkupdateprops';
 
       let updateList: any[] = new Array();
-
-      properties["update"].forEach(updateInput => {
-        let dop = {};
-        let cmisClass = new cmis.CmisSession(null);
-        cmisClass.setProperties(dop, updateInput);
-        updateList.push(dop)
-      });
-
-      delete properties["update"];
+      if (properties["update"] != undefined && properties["update"] != null) {
+        properties["update"].forEach(updateInput => {
+          let dop = {};
+          let cmisClass = new cmis.CmisSession(null);
+          cmisClass.setProperties(dop, updateInput);
+          updateList.push(dop)
+        });
+        delete properties["update"];
+      }
       properties["update"] = updateList;
 
       return this.post(this.defaultRepository.repositoryUrl, properties, {
