@@ -23,8 +23,10 @@ export declare namespace cmis {
         private setSecondaryTypeIds(options, secondaryTypeIds, action);
         private addPropertiesIds(options, inputIds);
         private http(method, url, options, multipartData?);
+        private httpBulkRequest(method, url, options, multipartDataList?);
         private get(url, options?);
         private post(url, options?, multipartData?);
+        private postForBulk(url, options?, multipartDataList?);
         constructor(url: string);
         setToken(token: string): CmisSession;
         setCredentials(username: string, password: string): CmisSession;

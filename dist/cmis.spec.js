@@ -4,8 +4,8 @@ var cmis_1 = require("./cmis");
 var chai_1 = require("chai");
 require("mocha");
 var username = 'admin';
-var password = 'admin';
-var url = 'https://cmis.alfresco.com/cmisbrowser';
+var password = 'admin123';
+var url = 'http://localhost:9089/MongoTest';
 if (undefined !== process && undefined != process.env) {
     url = process.env.CMIS_URL || url;
     username = process.env.CMIS_USERNAME || username;
@@ -616,6 +616,39 @@ describe('CmisJS library test', function () {
             chai_1.assert(data.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
             chai_1.assert(data.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
             chai_1.assert(data.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
+            done();
+        });
+    });
+    it('bulk insert tests for Doc uploads', function (done) {
+        var props = {};
+        var docList = new Array();
+        var aces = {};
+        aces["UserA"] = ['cmis:all'];
+        for (var i_6 = 20; i_6 < 25; i_6++) {
+            var input = { "cmis:objectId": "Doc_" + i_6, "cmis:name": "Doc_" + i_6, "cmis:objectTypeId": "cmis:document" };
+            input["addAces"] = aces;
+            input["content"] = {
+                "content": 'default_' + i_6,
+                "mimeTypeExtension": 'txt'
+            };
+            docList.push(input);
+        }
+        docList.push({
+            "content": {
+                "content": 'default_25',
+                "filename": "default_25",
+                "mimeTypeExtension": 'txt'
+            }, "cmis:objectId": "Doc_25", "cmis:name": "Doc_25", "cmis:objectTypeId": "cmis:document"
+        });
+        docList.push({
+            "content": {
+                "content": 'default_26',
+                "filename": "default_26.txt"
+            }, "cmis:objectId": "Doc_26", "cmis:name": "Doc_26", "cmis:objectTypeId": "cmis:document"
+        });
+        props["createDocument"] = docList;
+        session.bulkInsert(props).then(function (data) {
+            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
             done();
         });
     });
