@@ -316,16 +316,6 @@ var cmis;
             return this.http('POST', url, options, multipartData);
         };
         CmisSession.prototype.postForBulk = function (url, options, multipartDataList) {
-            if (multipartDataList != undefined && multipartDataList != null && multipartDataList.length === 0) {
-                multipartDataList.push({
-                    "name": "content",
-                    "multipartData": {
-                        "content": 'default',
-                        "filename": 'default',
-                        "mimeTypeExtension": 'txt'
-                    }
-                });
-            }
             return this.httpBulkRequest('POST', url, options, multipartDataList);
         };
         /**

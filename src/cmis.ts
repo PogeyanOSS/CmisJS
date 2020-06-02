@@ -470,16 +470,6 @@ export namespace cmis {
       url: string, options?: Options,
       multipartDataList?: any[]
     ): Promise<Response> {
-      if (multipartDataList != undefined && multipartDataList != null && multipartDataList.length === 0) {
-        multipartDataList.push({
-          "name": "content",
-          "multipartData": {
-            "content": 'default',
-            "filename": 'default',
-            "mimeTypeExtension": 'txt'
-          }
-        })
-      }
       return this.httpBulkRequest('POST', url, options, multipartDataList);
     }
 
