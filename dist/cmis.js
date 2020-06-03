@@ -169,11 +169,95 @@ var cmis;
             return response;
         };
         ;
+        CmisSession.prototype.httpBulkRequest = function (method, url, options, multipartDataList) {
+            var _this = this;
+            var body = {};
+            for (var k in this.options) {
+                if (this.options[k] != null && this.options[k] !== undefined) {
+                    body[k] = this.options[k];
+                }
+            }
+            for (var k in options) {
+                if (options[k] != null && options[k] !== undefined) {
+                    body[k] = options[k];
+                }
+            }
+            var auth;
+            if (this.username && this.password) {
+                auth = 'Basic ' + isomorphic_base64_1.btoa(this.username + ":" + this.password);
+            }
+            else if (this.token) {
+                auth = "Bearer " + this.token;
+            }
+            var cfg = { method: method };
+            if (auth) {
+                cfg.headers = {
+                    'Authorization': auth
+                };
+            }
+            else {
+                cfg.credentials = 'include';
+            }
+            if (multipartDataList != undefined && multipartDataList != null) {
+                var formData_1 = new FormData();
+                multipartDataList.forEach(function (data) {
+                    var multipartData = data["multipartData"];
+                    var content = multipartData["content"];
+                    if ('string' == typeof content) {
+                        if (typeof (Blob) !== 'undefined')
+                            content = new Blob([content]);
+                    }
+                    else if (typeof (Buffer) !== 'undefined') {
+                        content = new Buffer(content);
+                    }
+                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+                });
+                for (var k in body) {
+                    if (Array.isArray(body[k])) {
+                        formData_1.append(k, JSON.stringify(body[k]));
+                    }
+                    else {
+                        formData_1.append(k, '' + body[k]);
+                    }
+                }
+                if (this.charset) {
+                    formData_1.append('_charset_', this.charset);
+                }
+                cfg.body = formData_1;
+            }
+            else {
+                var usp = new URLSearchParams();
+                for (var k in body) {
+                    usp.set(k, body[k]);
+                }
+                if (method !== 'GET') {
+                    cfg.body = usp.toString();
+                    cfg.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+                }
+                else {
+                    url = url + "?" + usp.toString();
+                }
+            }
+            var response = fetch(url, cfg).then(function (res) {
+                if (res.status < 200 || res.status > 299) {
+                    throw new HTTPError(res);
+                }
+                return res;
+            });
+            if (this.errorHandler) {
+                response.catch(function (err) { return _this.errorHandler(err); });
+            }
+            return response;
+        };
+        ;
         CmisSession.prototype.get = function (url, options) {
             return this.http('GET', url, options);
         };
         CmisSession.prototype.post = function (url, options, multipartData) {
             return this.http('POST', url, options, multipartData);
+        };
+        CmisSession.prototype.postForBulk = function (url, options, multipartDataList) {
+            return this.httpBulkRequest('POST', url, options, multipartDataList);
         };
         CmisSession.prototype.setToken = function (token) {
             this.token = token;
@@ -910,6 +994,7 @@ var cmis;
             var createFolList = new Array();
             var createPolList = new Array();
             var createRelList = new Array();
+            var multipartDataList = new Array();
             if (properties["createItem"] != undefined && properties["createItem"] != null) {
                 properties["createItem"].forEach(function (itemInput) {
                     var dop = {};
@@ -941,6 +1026,17 @@ var cmis;
                     delete docInput["removeAces"];
                     cmisClass.setPolicies(dop, policies);
                     delete docInput["policies"];
+                    var multipartData = docInput["content"];
+                    if (multipartData != undefined && multipartData != null) {
+                        if (multipartData["filename"] == undefined || multipartData["filename"] == null) {
+                            multipartData["filename"] = docInput["cmis:name"];
+                        }
+                        multipartDataList.push({
+                            "multipartData": multipartData,
+                            "name": docInput["cmis:name"]
+                        });
+                        delete docInput["content"];
+                    }
                     cmisClass.setProperties(dop, docInput);
                     createDocList.push(dop);
                 });
@@ -1005,11 +1101,7 @@ var cmis;
             properties["createFolder"] = createFolList;
             properties["createPolicy"] = createPolList;
             properties["createRelationship"] = createRelList;
-            return this.post(this.defaultRepository.repositoryUrl, properties, {
-                content: 'default',
-                filename: 'default.txt',
-                mimeTypeExtension: 'text/plain'
-            }).then(function (res) { return res.json(); });
+            return this.postForBulk(this.defaultRepository.repositoryUrl, properties, multipartDataList).then(function (res) { return res.json(); });
         };
         ;
         CmisSession.prototype.bulkUpdate = function (properties, options) {
@@ -1029,8 +1121,8 @@ var cmis;
             properties["update"] = updateList;
             return this.post(this.defaultRepository.repositoryUrl, properties, {
                 content: 'default',
-                filename: 'default.txt',
-                mimeTypeExtension: 'text/plain'
+                filename: 'default',
+                mimeTypeExtension: 'txt'
             }).then(function (res) { return res.json(); });
         };
         ;

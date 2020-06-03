@@ -343,6 +343,106 @@ export namespace cmis {
       return response;
     };
 
+    /**
+         * internal method to perform http requests for bulkRequest
+         */
+
+    private httpBulkRequest(
+      method: 'GET' | 'POST',
+      url: string,
+      options: Options,
+      multipartDataList?: any[]
+    ): Promise<Response> {
+
+      let body = {};
+
+      for (let k in this.options) {
+        if (this.options[k] != null && this.options[k] !== undefined) {
+          body[k] = this.options[k];
+        }
+      }
+      for (let k in options) {
+        if (options[k] != null && options[k] !== undefined) {
+          body[k] = options[k];
+        }
+      }
+
+      let auth: string;
+
+      if (this.username && this.password) {
+        auth = 'Basic ' + btoa(`${this.username}:${this.password}`);
+      } else if (this.token) {
+        auth = `Bearer ${this.token}`;
+      }
+
+      let cfg: RequestInit = { method: method };
+      if (auth) {
+        cfg.headers = {
+          'Authorization': auth
+        };
+      } else {
+        cfg.credentials = 'include';
+      }
+
+      if (multipartDataList != undefined && multipartDataList != null) {
+        let formData = new FormData();
+
+        multipartDataList.forEach(data => {
+          let multipartData: { content: string | Blob | Buffer, filename: string, mimeTypeExtension?: string } = data["multipartData"];
+          let content: any = multipartData["content"];
+          if ('string' == typeof content) {
+            if (typeof (Blob) !== 'undefined')
+              content = new Blob([content]);
+          } else if (typeof (Buffer) !== 'undefined') {
+            content = new Buffer(content);
+          }
+          formData.append(
+            data["name"],
+            content,
+            multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+
+        })
+
+        for (let k in body) {
+          if (Array.isArray(body[k])) {
+            formData.append(k, JSON.stringify(body[k]));
+          } else {
+            formData.append(k, '' + body[k]);
+          }
+        }
+
+        if (this.charset) {
+          formData.append('_charset_', this.charset);
+        }
+
+        cfg.body = formData;
+      } else {
+        let usp = new URLSearchParams();
+        for (let k in body) {
+          usp.set(k, body[k]);
+        }
+        if (method !== 'GET') {
+          cfg.body = usp.toString();
+          cfg.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+        } else {
+          url = `${url}?${usp.toString()}`;
+        }
+      }
+
+
+      let response = fetch(url, cfg).then(res => {
+        if (res.status < 200 || res.status > 299) {
+          throw new HTTPError(res);
+        }
+        return res;
+      });
+
+      if (this.errorHandler) {
+        response.catch(err => this.errorHandler(err));
+      }
+
+      return response;
+    };
 
     /**
      * shorthand for http.('GET',...)
@@ -366,6 +466,12 @@ export namespace cmis {
       return this.http('POST', url, options, multipartData);
     }
 
+    private postForBulk(
+      url: string, options?: Options,
+      multipartDataList?: any[]
+    ): Promise<Response> {
+      return this.httpBulkRequest('POST', url, options, multipartDataList);
+    }
 
     /**
      * Creates an instance of CmisSession.
@@ -1690,6 +1796,7 @@ export namespace cmis {
       let createFolList: any[] = new Array();
       let createPolList: any[] = new Array();
       let createRelList: any[] = new Array();
+      let multipartDataList: any[] = new Array();
 
       if (properties["createItem"] != undefined && properties["createItem"] != null) {
         properties["createItem"].forEach(itemInput => {
@@ -1723,6 +1830,17 @@ export namespace cmis {
           delete docInput["removeAces"];
           cmisClass.setPolicies(dop, policies);
           delete docInput["policies"];
+          let multipartData = docInput["content"];
+          if (multipartData != undefined && multipartData != null) {
+            if (multipartData["filename"] == undefined || multipartData["filename"] == null) {
+              multipartData["filename"] = docInput["cmis:name"]
+            }
+            multipartDataList.push({
+              "multipartData": multipartData,
+              "name": docInput["cmis:name"]
+            })
+            delete docInput["content"];
+          }
           cmisClass.setProperties(dop, docInput);
           createDocList.push(dop)
         });
@@ -1788,11 +1906,7 @@ export namespace cmis {
       properties["createPolicy"] = createPolList;
       properties["createRelationship"] = createRelList;
 
-      return this.post(this.defaultRepository.repositoryUrl, properties, {
-        content: 'default',
-        filename: 'default.txt',
-        mimeTypeExtension: 'text/plain'
-      }).then(res => res.json());
+      return this.postForBulk(this.defaultRepository.repositoryUrl, properties, multipartDataList).then(res => res.json());
     };
     /**
   * bulkUpdate
@@ -1819,8 +1933,8 @@ export namespace cmis {
 
       return this.post(this.defaultRepository.repositoryUrl, properties, {
         content: 'default',
-        filename: 'default.txt',
-        mimeTypeExtension: 'text/plain'
+        filename: 'default',
+        mimeTypeExtension: 'txt'
       }).then(res => res.json());
     };
   }

@@ -3,8 +3,8 @@ import { assert } from 'chai';
 import 'mocha';
 
 let username = 'admin';
-let password = 'admin';
-let url = 'https://cmis.alfresco.com/cmisbrowser';
+let password = 'admin123';
+let url = 'http://localhost:9089/MongoTest';
 
 
 if (undefined !== process && undefined != process.env) {
@@ -699,6 +699,42 @@ describe('CmisJS library test', function () {
       assert(data.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
       assert(data.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
 
+      done();
+    });
+  });
+
+  it('bulk insert tests for Doc uploads', done => {
+    let props: any = {};
+    let docList: any[] = new Array();
+
+    var aces = {}
+    aces["UserA"] = ['cmis:all'];
+    for (let i = 20; i < 25; i++) {
+      let input: any = { "cmis:objectId": "Doc_" + i, "cmis:name": "Doc_" + i, "cmis:objectTypeId": "cmis:document" }
+      input["addAces"] = aces;
+      input["content"] = {
+        "content": 'default_' + i,
+        "mimeTypeExtension": 'txt'
+      }
+      docList.push(input)
+    }
+    docList.push({
+      "content": {
+        "content": 'default_25',
+        "filename": "default_25",
+        "mimeTypeExtension": 'txt'
+      }, "cmis:objectId": "Doc_25", "cmis:name": "Doc_25", "cmis:objectTypeId": "cmis:document"
+    })
+    docList.push({
+      "content": {
+        "content": 'default_26',
+        "filename": "default_26.txt"
+      }, "cmis:objectId": "Doc_26", "cmis:name": "Doc_26", "cmis:objectTypeId": "cmis:document"
+    })
+
+    props["createDocument"] = docList;
+    session.bulkInsert(props).then(data => {
+      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
       done();
     });
   });
