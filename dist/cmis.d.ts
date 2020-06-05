@@ -33,7 +33,7 @@ export declare namespace cmis {
         setCharset(charset: string): CmisSession;
         setErrorHandler(handler: (err: Error) => void): void;
         loadRepositories(): Promise<void>;
-        from(sessionString: any): Promise<any>;
+        static from(sessionString: any): Promise<any>;
         toString(): Promise<any>;
         getUsername(): string;
         getRepositoryInfo(): Promise<any>;

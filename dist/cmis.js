@@ -288,7 +288,7 @@ var cmis;
                 });
             });
         };
-        CmisSession.prototype.from = function (sessionString) {
+        CmisSession.from = function (sessionString) {
             var sessionJson = JSON.parse(sessionString);
             var newSession = new CmisSession(sessionJson.url);
             newSession.setCredentials(sessionJson.username, sessionJson.password);

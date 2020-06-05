@@ -536,7 +536,7 @@ export namespace cmis {
     /**
     * Deserializes to a session object from session json string
     */
-    public from(sessionString: any): Promise<any> {
+    public static from(sessionString: any): Promise<any> {
       const sessionJson = JSON.parse(sessionString);
       const newSession: any = new CmisSession(sessionJson.url);
       newSession.setCredentials(sessionJson.username, sessionJson.password)
@@ -552,7 +552,7 @@ export namespace cmis {
       const sessionjson: any = JSON.stringify(this);
       return sessionjson;
     }
-    
+
     /**
      * gets username
      */
