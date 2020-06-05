@@ -288,7 +288,7 @@ var cmis;
                 });
             });
         };
-        CmisSession.prototype.deserializeSession = function (sessionString) {
+        CmisSession.prototype.from = function (sessionString) {
             var sessionJson = JSON.parse(sessionString);
             var newSession = new CmisSession(sessionJson.url);
             newSession.setCredentials(sessionJson.username, sessionJson.password);
@@ -296,8 +296,8 @@ var cmis;
             newSession.repositories = sessionJson.repositories;
             return newSession;
         };
-        CmisSession.prototype.serializeSession = function (session) {
-            var sessionjson = JSON.stringify(session);
+        CmisSession.prototype.toString = function () {
+            var sessionjson = JSON.stringify(this);
             return sessionjson;
         };
         CmisSession.prototype.getRepositoryInfo = function () {

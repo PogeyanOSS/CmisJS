@@ -368,7 +368,7 @@ var cmis;
         /**
         * Deserializes to a session object from session json string
         */
-        CmisSession.prototype.deserializeSession = function (sessionString) {
+        CmisSession.prototype.from = function (sessionString) {
             var sessionJson = JSON.parse(sessionString);
             var newSession = new CmisSession(sessionJson.url);
             newSession.setCredentials(sessionJson.username, sessionJson.password);
@@ -379,8 +379,8 @@ var cmis;
         /**
          * Serializes a session object to session json string
          */
-        CmisSession.prototype.serializeSession = function (session) {
-            var sessionjson = JSON.stringify(session);
+        CmisSession.prototype.toString = function () {
+            var sessionjson = JSON.stringify(this);
             return sessionjson;
         };
         /**

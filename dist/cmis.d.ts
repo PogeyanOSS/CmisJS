@@ -33,8 +33,8 @@ export declare namespace cmis {
         setCharset(charset: string): CmisSession;
         setErrorHandler(handler: (err: Error) => void): void;
         loadRepositories(): Promise<void>;
-        deserializeSession(sessionString: any): Promise<any>;
-        serializeSession(session: any): Promise<any>;
+        from(sessionString: any): Promise<any>;
+        toString(): Promise<any>;
         getRepositoryInfo(): Promise<any>;
         getTypeChildren(typeId?: string, includePropertyDefinitions?: boolean, options?: {
             maxItems?: number;
