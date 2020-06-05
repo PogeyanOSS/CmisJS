@@ -384,6 +384,12 @@ var cmis;
             return sessionjson;
         };
         /**
+         * gets username
+         */
+        CmisSession.prototype.getUsername = function () {
+            return this.username;
+        };
+        /**
          * gets repository informations
          */
         CmisSession.prototype.getRepositoryInfo = function () {

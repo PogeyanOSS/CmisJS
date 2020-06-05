@@ -552,6 +552,13 @@ export namespace cmis {
       const sessionjson: any = JSON.stringify(this);
       return sessionjson;
     }
+    
+    /**
+     * gets username
+     */
+    public getUsername(): string {
+      return this.username;
+    }
 
     /**
      * gets repository informations

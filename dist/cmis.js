@@ -300,6 +300,9 @@ var cmis;
             var sessionjson = JSON.stringify(this);
             return sessionjson;
         };
+        CmisSession.prototype.getUsername = function () {
+            return this.username;
+        };
         CmisSession.prototype.getRepositoryInfo = function () {
             return this.get(this.defaultRepository.repositoryUrl, { cmisselector: 'repositoryInfo' })
                 .then(function (res) { return res.json(); });

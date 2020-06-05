@@ -35,6 +35,7 @@ export declare namespace cmis {
         loadRepositories(): Promise<void>;
         from(sessionString: any): Promise<any>;
         toString(): Promise<any>;
+        getUsername(): string;
         getRepositoryInfo(): Promise<any>;
         getTypeChildren(typeId?: string, includePropertyDefinitions?: boolean, options?: {
             maxItems?: number;
