@@ -64,6 +64,7 @@ export namespace cmis {
     ACLPropagation?: string;
     objectids?: string
     key?: string;
+    relationshipQuery?: string;
 
     cmisaction?: 'query' |
       'createType' |
@@ -101,7 +102,8 @@ export namespace cmis {
       'removeFromHierarchy' |
       'bulkdelete' |
       'bulkinsert' |
-      'bulkupdateprops';
+      'bulkupdateprops' |
+      'relationshipQuery';
 
     cmisselector?:
       'repositoryInfo' |
@@ -1963,5 +1965,16 @@ export namespace cmis {
         mimeTypeExtension: 'txt'
       }).then(res => res.json());
     };
+
+     /**
+     * Creates a new type definition
+     */
+    public relationshipQuery(query: any): Promise<any> {
+      return this.post(this.defaultRepository.repositoryUrl, {
+        cmisaction: 'relationshipQuery',
+        relationshipQuery: JSON.stringify(query)
+      }).then(res => res.json());
+    };
+
   }
 }

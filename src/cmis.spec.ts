@@ -739,4 +739,37 @@ describe('CmisJS library test', function () {
     });
   });
 
+  var queryJson = {
+    "size": 0,
+    "filter": [],
+    "sort": [],
+    "fields": {
+        "cq:order_cq:product": {
+            "size": 10,
+            "filter": [
+                {
+                    "field": "cq:product.status",
+                    "operator": "eq",
+                    "value": "Active"
+                }
+            ],
+            "sort": [
+                {
+                    "field": "cq:product.cq:productId",
+                    "operator": "asce"
+                }
+            ]
+        }
+    }
+  };
+
+  it('should evalute relationship query', done => {
+    session.relationshipQuery(queryJson).then(data => {
+      assert(data > 1, "Empty data");
+      done();
+    }).catch(err => {
+      done(err);
+    });
+  });
+
 });
