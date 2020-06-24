@@ -748,7 +748,7 @@ describe('CmisJS library test', function () {
             "size": 10,
             "filter": [
                 {
-                    "field": "cq:product.status",
+                    "field": "cq:product.cq:status",
                     "operator": "eq",
                     "value": "Active"
                 }
