@@ -1967,7 +1967,7 @@ export namespace cmis {
     };
 
      /**
-     * Creates a new type definition
+     * Evaluate relationship query
      */
     public relationshipQuery(query: any): Promise<any> {
       return this.post(this.defaultRepository.repositoryUrl, {
