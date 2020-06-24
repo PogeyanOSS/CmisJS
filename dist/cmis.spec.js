@@ -652,5 +652,36 @@ describe('CmisJS library test', function () {
             done();
         });
     });
+    var queryJson = {
+        "size": 0,
+        "filter": [],
+        "sort": [],
+        "fields": {
+            "cq:order_cq:product": {
+                "size": 10,
+                "filter": [
+                    {
+                        "field": "cq:product.cq:status",
+                        "operator": "eq",
+                        "value": "Active"
+                    }
+                ],
+                "sort": [
+                    {
+                        "field": "cq:product.cq:productId",
+                        "operator": "asce"
+                    }
+                ]
+            }
+        }
+    };
+    it('should evalute relationship query', function (done) {
+        session.relationshipQuery(queryJson).then(function (data) {
+            chai_1.assert(data > 1, "Empty data");
+            done();
+        }).catch(function (err) {
+            done(err);
+        });
+    });
 });
 //# sourceMappingURL=cmis.spec.js.map

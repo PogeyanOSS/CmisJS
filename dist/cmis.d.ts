@@ -328,5 +328,6 @@ export declare namespace cmis {
         bulkUpdate(properties: any, options?: {
             succinct?: boolean;
         }): Promise<any>;
+        relationshipQuery(query: any): Promise<any>;
     }
 }

@@ -1141,6 +1141,13 @@ var cmis;
             }).then(function (res) { return res.json(); });
         };
         ;
+        CmisSession.prototype.relationshipQuery = function (query) {
+            return this.post(this.defaultRepository.repositoryUrl, {
+                cmisaction: 'relationshipQuery',
+                relationshipQuery: JSON.stringify(query)
+            }).then(function (res) { return res.json(); });
+        };
+        ;
         return CmisSession;
     }());
     cmis.CmisSession = CmisSession;
