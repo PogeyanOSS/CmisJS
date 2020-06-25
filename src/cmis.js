@@ -366,6 +366,30 @@ var cmis;
             });
         };
         /**
+        * Deserializes to a session object from session json string
+        */
+        CmisSession.from = function (sessionString) {
+            var sessionJson = JSON.parse(sessionString);
+            var newSession = new CmisSession(sessionJson.url);
+            newSession.setCredentials(sessionJson.username, sessionJson.password);
+            newSession.defaultRepository = sessionJson.defaultRepository;
+            newSession.repositories = sessionJson.repositories;
+            return newSession;
+        };
+        /**
+         * Serializes a session object to session json string
+         */
+        CmisSession.prototype.toString = function () {
+            var sessionjson = JSON.stringify(this);
+            return sessionjson;
+        };
+        /**
+         * gets username
+         */
+        CmisSession.prototype.getUsername = function () {
+            return this.username;
+        };
+        /**
          * gets repository informations
          */
         CmisSession.prototype.getRepositoryInfo = function () {

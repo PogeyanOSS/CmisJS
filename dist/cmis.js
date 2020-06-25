@@ -288,6 +288,21 @@ var cmis;
                 });
             });
         };
+        CmisSession.from = function (sessionString) {
+            var sessionJson = JSON.parse(sessionString);
+            var newSession = new CmisSession(sessionJson.url);
+            newSession.setCredentials(sessionJson.username, sessionJson.password);
+            newSession.defaultRepository = sessionJson.defaultRepository;
+            newSession.repositories = sessionJson.repositories;
+            return newSession;
+        };
+        CmisSession.prototype.toString = function () {
+            var sessionjson = JSON.stringify(this);
+            return sessionjson;
+        };
+        CmisSession.prototype.getUsername = function () {
+            return this.username;
+        };
         CmisSession.prototype.getRepositoryInfo = function () {
             return this.get(this.defaultRepository.repositoryUrl, { cmisselector: 'repositoryInfo' })
                 .then(function (res) { return res.json(); });

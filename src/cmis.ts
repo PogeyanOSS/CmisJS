@@ -533,6 +533,32 @@ export namespace cmis {
       });
     }
 
+    /**
+    * Deserializes to a session object from session json string
+    */
+    public static from(sessionString: any): Promise<any> {
+      const sessionJson = JSON.parse(sessionString);
+      const newSession: any = new CmisSession(sessionJson.url);
+      newSession.setCredentials(sessionJson.username, sessionJson.password)
+      newSession.defaultRepository = sessionJson.defaultRepository;
+      newSession.repositories = sessionJson.repositories;
+      return newSession;
+    }
+
+    /**
+     * Serializes a session object to session json string
+     */
+    public toString(): Promise<any> {
+      const sessionjson: any = JSON.stringify(this);
+      return sessionjson;
+    }
+
+    /**
+     * gets username
+     */
+    public getUsername(): string {
+      return this.username;
+    }
 
     /**
      * gets repository informations
