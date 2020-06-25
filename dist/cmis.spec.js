@@ -53,32 +53,32 @@ describe('CmisJS library test', function () {
         for (var i_1 = 0; i_1 < 10; i_1++) {
             var input = { "cmis:objectId": "Item_" + i_1, "cmis:name": "Item_" + i_1, "cmis:objectTypeId": "cmis:item" };
             input["addAces"] = aces;
-            input["policies"] = ["Pol_0"];
+            input["policies"] = ["policy123"];
             itemList.push(input);
         }
         itemList.push({ "source_table": "cmis:folder", "target_table": "cmis:document", "cmis:name": "folder_document", "cmis:objectTypeId": "cmis_ext:relationmd" });
         for (var i_2 = 0; i_2 < 10; i_2++) {
             var input = { "cmis:objectId": "Doc_" + i_2, "cmis:name": "Doc_" + i_2, "cmis:objectTypeId": "cmis:document" };
             input["addAces"] = aces;
-            input["policies"] = ["Pol_0"];
+            input["policies"] = ["policy123"];
             docList.push(input);
         }
         for (var i_3 = 0; i_3 < 10; i_3++) {
             var input = { "cmis:objectId": "Fol_" + i_3, "cmis:name": "Fol_" + i_3, "cmis:objectTypeId": "cmis:folder" };
             input["addAces"] = aces;
-            input["policies"] = ["Pol_0"];
+            input["policies"] = ["policy123"];
             folList.push(input);
         }
         for (var i_4 = 0; i_4 < 10; i_4++) {
             var input = { "cmis:objectId": "Pol_" + i_4, "cmis:name": "Pol_" + i_4, "cmis:objectTypeId": "cmis:policy" };
             input["addAces"] = aces;
-            input["policies"] = ["Pol_0"];
+            input["policies"] = ["policy123"];
             polList.push(input);
         }
         for (var i_5 = 0; i_5 < 10; i_5++) {
             var input = { "relation_name": "folder_document", "cmis:name": "Rel_" + i_5, "cmis:objectTypeId": "cmis_ext:relationship", "cmis:sourceId": "Fol_" + i_5, "cmis:targetId": "Doc_" + i_5 };
             input["addAces"] = aces;
-            input["policies"] = ["Pol_0"];
+            input["policies"] = ["policy123"];
             relList.push(input);
         }
         props["createItem"] = itemList;
@@ -87,7 +87,7 @@ describe('CmisJS library test', function () {
         props["createPolicy"] = polList;
         props["createRelationship"] = relList;
         session.bulkInsert(props).then(function (data) {
-            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
             done();
         });
     });
@@ -136,7 +136,7 @@ describe('CmisJS library test', function () {
         });
         props["createDocument"] = docList;
         session.bulkInsert(props).then(function (data) {
-            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
             done();
         });
     });
