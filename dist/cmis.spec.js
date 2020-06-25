@@ -599,7 +599,7 @@ describe('CmisJS library test', function () {
         props["createPolicy"] = polList;
         props["createRelationship"] = relList;
         session.bulkInsert(props).then(function (data) {
-            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
             done();
         });
     });
@@ -612,10 +612,10 @@ describe('CmisJS library test', function () {
         updateList.push({ "cmis:objectId": "Pol_0", "cmis:name": "Pol_Updated", "cmis:objectTypeId": "cmis:policy" });
         props["update"] = updateList;
         session.bulkUpdate(props).then(function (data) {
-            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_Updated", "name should be Item_Updated");
-            chai_1.assert(data.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
-            chai_1.assert(data.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
-            chai_1.assert(data.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Item_Updated", "name should be Item_Updated");
+            chai_1.assert(data.success.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
+            chai_1.assert(data.success.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
+            chai_1.assert(data.success.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
             done();
         });
     });
@@ -648,7 +648,35 @@ describe('CmisJS library test', function () {
         });
         props["createDocument"] = docList;
         session.bulkInsert(props).then(function (data) {
-            chai_1.assert(data.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
+            done();
+        });
+    });
+    it('bulk update tests for doc uploads', function (done) {
+        var props = {};
+        var updateList = new Array();
+        updateList.push({ "content": {
+                "content": 'Doc_20_upload',
+                "filename": "Doc_20_upload.txt"
+            }, "cmis:objectId": "Doc_20", "cmis:name": "Doc_20_upload", "cmis:objectTypeId": "cmis:document" });
+        updateList.push({ "content": {
+                "content": 'Doc_21_upload',
+                "filename": "Doc_21_upload.txt"
+            }, "cmis:objectId": "Doc_21", "cmis:name": "Doc_21_upload", "cmis:objectTypeId": "cmis:document" });
+        updateList.push({ "content": {
+                "content": 'Doc_22_upload',
+                "filename": "Doc_22_upload.txt"
+            }, "cmis:objectId": "Doc_22", "cmis:name": "Doc_22_upload", "cmis:objectTypeId": "cmis:document" });
+        updateList.push({ "content": {
+                "content": 'Doc_23_upload',
+                "filename": "Doc_23_upload.txt"
+            }, "cmis:objectId": "Doc_23", "cmis:name": "Doc_23_upload", "cmis:objectTypeId": "cmis:document" });
+        props["update"] = updateList;
+        session.bulkUpdate(props).then(function (data) {
+            chai_1.assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20_upload", "name should be Doc_20_upload");
+            chai_1.assert(data.success.objects[1].object.succinctProperties["cmis:name"] === "Doc_21_upload", "name should be Doc_21_upload");
+            chai_1.assert(data.success.objects[2].object.succinctProperties["cmis:name"] === "Doc_22_upload", "name should be Doc_22_upload");
+            chai_1.assert(data.success.objects[3].object.succinctProperties["cmis:name"] === "Doc_23_upload", "name should be Doc_23_upload");
             done();
         });
     });
