@@ -678,7 +678,7 @@ describe('CmisJS library test', function () {
     props["createPolicy"] = polList;
     props["createRelationship"] = relList;
     session.bulkInsert(props).then(data => {
-      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
+      assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Item_0", "name should be Item_0");
       done();
     });
   });
@@ -694,10 +694,10 @@ describe('CmisJS library test', function () {
     props["update"] = updateList;
 
     session.bulkUpdate(props).then(data => {
-      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Item_Updated", "name should be Item_Updated");
-      assert(data.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
-      assert(data.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
-      assert(data.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
+      assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Item_Updated", "name should be Item_Updated");
+      assert(data.success.objects[1].object.succinctProperties["cmis:name"] === "Doc_Updated", "name should be Doc_Updated");
+      assert(data.success.objects[2].object.succinctProperties["cmis:name"] === "Fol_Updated", "name should be Fol_Updated");
+      assert(data.success.objects[3].object.succinctProperties["cmis:name"] === "Pol_Updated", "name should be Pol_Updated");
 
       done();
     });
@@ -734,7 +734,37 @@ describe('CmisJS library test', function () {
 
     props["createDocument"] = docList;
     session.bulkInsert(props).then(data => {
-      assert(data.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
+      assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");
+      done();
+    });
+  });
+  it('bulk update tests for doc uploads', done => {
+    let props: any = {};
+    let updateList: any[] = new Array();
+    updateList.push({"content": {
+      "content": 'Doc_20_upload',
+      "filename": "Doc_20_upload.txt"
+    }, "cmis:objectId": "Doc_20", "cmis:name": "Doc_20_upload", "cmis:objectTypeId": "cmis:document" });
+    updateList.push({"content": {
+      "content": 'Doc_21_upload',
+      "filename": "Doc_21_upload.txt"
+    }, "cmis:objectId": "Doc_21", "cmis:name": "Doc_21_upload", "cmis:objectTypeId": "cmis:document" });
+    updateList.push({"content": {
+      "content": 'Doc_22_upload',
+      "filename": "Doc_22_upload.txt"
+    }, "cmis:objectId": "Doc_22", "cmis:name": "Doc_22_upload", "cmis:objectTypeId": "cmis:document" });
+    updateList.push({"content": {
+      "content": 'Doc_23_upload',
+      "filename": "Doc_23_upload.txt"
+    }, "cmis:objectId": "Doc_23", "cmis:name": "Doc_23_upload", "cmis:objectTypeId": "cmis:document" });
+
+    props["update"] = updateList;
+
+    session.bulkUpdate(props).then(data => {
+      assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20_upload", "name should be Doc_20_upload");
+      assert(data.success.objects[1].object.succinctProperties["cmis:name"] === "Doc_21_upload", "name should be Doc_21_upload");
+      assert(data.success.objects[2].object.succinctProperties["cmis:name"] === "Doc_22_upload", "name should be Doc_22_upload");
+      assert(data.success.objects[3].object.succinctProperties["cmis:name"] === "Doc_23_upload", "name should be Doc_23_upload");
       done();
     });
   });
@@ -764,7 +794,7 @@ describe('CmisJS library test', function () {
   };
 
   it('should evalute relationship query', done => {
-    session.relationshipQuery(queryJson).then(data => {
+    session.fetch(queryJson).then(data => {
       assert(data > 1, "Empty data");
       done();
     }).catch(err => {

@@ -1124,26 +1124,34 @@ var cmis;
             var o = options;
             properties["cmisaction"] = 'bulkupdateprops';
             var updateList = new Array();
+            var multipartDataList = new Array();
             if (properties["update"] != undefined && properties["update"] != null) {
                 properties["update"].forEach(function (updateInput) {
                     var dop = {};
                     var cmisClass = new cmis.CmisSession(null);
+                    var multipartData = updateInput["content"];
+                    if (multipartData != undefined && multipartData != null) {
+                        if (multipartData["filename"] == undefined || multipartData["filename"] == null) {
+                            multipartData["filename"] = updateInput["cmis:objectId"];
+                        }
+                        multipartDataList.push({
+                            "multipartData": multipartData,
+                            "name": updateInput["cmis:objectId"]
+                        });
+                        delete updateInput["content"];
+                    }
                     cmisClass.setProperties(dop, updateInput);
                     updateList.push(dop);
                 });
                 delete properties["update"];
             }
             properties["update"] = updateList;
-            return this.post(this.defaultRepository.repositoryUrl, properties, {
-                content: 'default',
-                filename: 'default',
-                mimeTypeExtension: 'txt'
-            }).then(function (res) { return res.json(); });
+            return this.postForBulk(this.defaultRepository.repositoryUrl, properties, multipartDataList).then(function (res) { return res.json(); });
         };
         ;
-        CmisSession.prototype.relationshipQuery = function (query) {
+        CmisSession.prototype.fetch = function (query) {
             return this.post(this.defaultRepository.repositoryUrl, {
-                cmisaction: 'relationshipQuery',
+                cmisaction: 'fetch',
                 relationshipQuery: JSON.stringify(query)
             }).then(function (res) { return res.json(); });
         };
