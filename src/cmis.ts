@@ -64,7 +64,7 @@ export namespace cmis {
     ACLPropagation?: string;
     objectids?: string
     key?: string;
-    relationshipQuery?: string;
+    query?: string;
 
     cmisaction?: 'query' |
       'createType' |
@@ -636,29 +636,6 @@ export namespace cmis {
       let o = options as Options;
       o.cmisselector = 'checkedout'
       return this.get(this.defaultRepository.repositoryUrl, o).then(res => res.json());
-    };
-
-    /**
-     * performs a cmis query against the repository
-     */
-    public query(
-      statement: string,
-      searchAllVersions: boolean = false,
-      options: {
-        maxItems?: number,
-        skipCount?: number,
-        orderBy?: string,
-        renditionFilter?: string,
-        includeAllowableActions?: boolean,
-        includeRelationships?: 'none' | 'source' | 'target' | 'both',
-        succinct?: boolean
-      } = {}
-    ): Promise<any> {
-      let o = options as Options;
-      o.cmisaction = 'query';
-      o.statement = statement;
-      o.searchAllVersions = searchAllVersions;
-      return this.post(this.defaultRepository.repositoryUrl, o).then(res => res.json());
     };
 
     /**
@@ -1979,10 +1956,10 @@ export namespace cmis {
      /**
      * Evaluate relationship query
      */
-    public fetch(query: any): Promise<any> {
+    public query(query: any): Promise<any> {
       return this.post(this.defaultRepository.repositoryUrl, {
-        cmisaction: 'fetch',
-        relationshipQuery: JSON.stringify(query)
+        cmisaction: 'query',
+        query: JSON.stringify(query)
       }).then(res => res.json());
     };
 

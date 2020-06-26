@@ -794,7 +794,7 @@ describe('CmisJS library test', function () {
   };
 
   it('should evalute relationship query', done => {
-    session.fetch(queryJson).then(data => {
+    session.query(queryJson).then(data => {
       assert(data > 1, "Empty data");
       done();
     }).catch(err => {
