@@ -89,19 +89,6 @@ describe('CmisJS library test', function () {
       });
   });
 
-  it('should query the repository', done => {
-    session.query("select * from cmis:document", false, {
-      maxItems: 3
-    })
-      .then(data => {
-        assert(data.results.length == 3, 'Should find 3 documents');
-        done();
-      }).catch(err => {
-        console.log(err);
-      });
-  });
-
-
   var testType = {
     id: 'test:testDoc',
     baseId: 'cmis:document',
@@ -741,22 +728,30 @@ describe('CmisJS library test', function () {
   it('bulk update tests for doc uploads', done => {
     let props: any = {};
     let updateList: any[] = new Array();
-    updateList.push({"content": {
-      "content": 'Doc_20_upload',
-      "filename": "Doc_20_upload.txt"
-    }, "cmis:objectId": "Doc_20", "cmis:name": "Doc_20_upload", "cmis:objectTypeId": "cmis:document" });
-    updateList.push({"content": {
-      "content": 'Doc_21_upload',
-      "filename": "Doc_21_upload.txt"
-    }, "cmis:objectId": "Doc_21", "cmis:name": "Doc_21_upload", "cmis:objectTypeId": "cmis:document" });
-    updateList.push({"content": {
-      "content": 'Doc_22_upload',
-      "filename": "Doc_22_upload.txt"
-    }, "cmis:objectId": "Doc_22", "cmis:name": "Doc_22_upload", "cmis:objectTypeId": "cmis:document" });
-    updateList.push({"content": {
-      "content": 'Doc_23_upload',
-      "filename": "Doc_23_upload.txt"
-    }, "cmis:objectId": "Doc_23", "cmis:name": "Doc_23_upload", "cmis:objectTypeId": "cmis:document" });
+    updateList.push({
+      "content": {
+        "content": 'Doc_20_upload',
+        "filename": "Doc_20_upload.txt"
+      }, "cmis:objectId": "Doc_20", "cmis:name": "Doc_20_upload", "cmis:objectTypeId": "cmis:document"
+    });
+    updateList.push({
+      "content": {
+        "content": 'Doc_21_upload',
+        "filename": "Doc_21_upload.txt"
+      }, "cmis:objectId": "Doc_21", "cmis:name": "Doc_21_upload", "cmis:objectTypeId": "cmis:document"
+    });
+    updateList.push({
+      "content": {
+        "content": 'Doc_22_upload',
+        "filename": "Doc_22_upload.txt"
+      }, "cmis:objectId": "Doc_22", "cmis:name": "Doc_22_upload", "cmis:objectTypeId": "cmis:document"
+    });
+    updateList.push({
+      "content": {
+        "content": 'Doc_23_upload',
+        "filename": "Doc_23_upload.txt"
+      }, "cmis:objectId": "Doc_23", "cmis:name": "Doc_23_upload", "cmis:objectTypeId": "cmis:document"
+    });
 
     props["update"] = updateList;
 
@@ -774,22 +769,22 @@ describe('CmisJS library test', function () {
     "filter": [],
     "sort": [],
     "fields": {
-        "cq:order_cq:product": {
-            "size": 10,
-            "filter": [
-                {
-                    "field": "cq:product.cq:status",
-                    "operator": "eq",
-                    "value": "Active"
-                }
-            ],
-            "sort": [
-                {
-                    "field": "cq:product.cq:productId",
-                    "operator": "asce"
-                }
-            ]
-        }
+      "cq:order_cq:product": {
+        "size": 10,
+        "filter": [
+          {
+            "field": "cq:product.cq:status",
+            "operator": "eq",
+            "value": "Active"
+          }
+        ],
+        "sort": [
+          {
+            "field": "cq:product.cq:productId",
+            "operator": "asce"
+          }
+        ]
+      }
     }
   };
 
