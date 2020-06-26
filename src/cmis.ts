@@ -102,8 +102,7 @@ export namespace cmis {
       'removeFromHierarchy' |
       'bulkdelete' |
       'bulkinsert' |
-      'bulkupdateprops' |
-      'fetch';
+      'bulkupdateprops';
 
     cmisselector?:
       'repositoryInfo' |
