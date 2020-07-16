@@ -397,12 +397,9 @@ export namespace cmis {
             content = new Buffer(content);
           }
           formData.append(
-            data["name"],
-            content,
-            multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
-
+            data["name"],content,
+            multipartData.mimeTypeExtension ? multipartData.filename.lastIndexOf(".") > 0 ? multipartData.filename : multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
         })
-
         for (let k in body) {
           if (Array.isArray(body[k])) {
             formData.append(k, JSON.stringify(body[k]));

@@ -13,7 +13,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.cmis = void 0;
 require("cross-fetch/polyfill");
 var isomorphic_base64_1 = require("isomorphic-base64");
 require("isomorphic-form-data");
@@ -264,7 +263,7 @@ var cmis;
                     else if (typeof (Buffer) !== 'undefined') {
                         content = new Buffer(content);
                     }
-                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename.lastIndexOf(".") > 0 ? multipartData.filename : multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
                 });
                 for (var k in body) {
                     if (Array.isArray(body[k])) {

@@ -210,7 +210,7 @@ var cmis;
                     else if (typeof (Buffer) !== 'undefined') {
                         content = new Buffer(content);
                     }
-                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename.lastIndexOf(".") > 0 ? multipartData.filename : multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
                 });
                 for (var k in body) {
                     if (Array.isArray(body[k])) {
