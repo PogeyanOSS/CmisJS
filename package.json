@@ -18,7 +18,8 @@
     "es6-promise": "~4.2.4",
     "isomorphic-base64": "~1.0.2",
     "isomorphic-form-data": "~1.0.0",
-    "url-search-params-polyfill": "~2.0.2"
+    "url-search-params-polyfill": "~2.0.2",
+    "uuidv4": "^6.1.1"
   },
   "scripts": {
     "test": "tsc && mocha dist/**/*.spec.js",
