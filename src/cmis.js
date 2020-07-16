@@ -17,6 +17,7 @@ require("cross-fetch/polyfill");
 var isomorphic_base64_1 = require("isomorphic-base64");
 require("isomorphic-form-data");
 require("url-search-params-polyfill");
+var uuidv4_1 = require("uuidv4");
 var cmis;
 (function (cmis) {
     /**
@@ -263,7 +264,7 @@ var cmis;
                     else if (typeof (Buffer) !== 'undefined') {
                         content = new Buffer(content);
                     }
-                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+                    formData_1.append(data["name"], content, multipartData.mimeTypeExtension ? multipartData.filename.lastIndexOf(".") > 0 ? multipartData.filename : multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
                 });
                 for (var k in body) {
                     if (Array.isArray(body[k])) {
@@ -1316,6 +1317,9 @@ var cmis;
             if (properties["createDocument"] != undefined && properties["createDocument"] != null) {
                 properties["createDocument"].forEach(function (docInput) {
                     var dop = {};
+                    if (docInput["cmis:objectId"] === undefined || docInput["cmis:objectId"] === null || docInput["cmis:objectId"] === "") {
+                        docInput["cmis:objectId"] = uuidv4_1.uuid();
+                    }
                     var cmisClass = new cmis.CmisSession(null);
                     var addAces = docInput["addAces"];
                     var removeAces = docInput["removeAces"];
@@ -1333,7 +1337,7 @@ var cmis;
                         }
                         multipartDataList.push({
                             "multipartData": multipartData,
-                            "name": docInput["cmis:name"]
+                            "name": docInput["cmis:objectId"] + "_" + docInput["cmis:name"]
                         });
                         delete docInput["content"];
                     }
