@@ -718,7 +718,13 @@ describe('CmisJS library test', function () {
         "filename": "default_26.txt"
       }, "cmis:objectId": "Doc_26", "cmis:name": "Doc_26", "cmis:objectTypeId": "cmis:document"
     })
-
+    docList.push({
+      "content": {
+        "content": 'default_27',
+        "filename": "default_27.txt",
+        "mimeTypeExtension": 'txt'
+      }, "cmis:objectId": "Doc_27", "cmis:name": "Doc_27", "cmis:objectTypeId": "cmis:document"
+    })
     props["createDocument"] = docList;
     session.bulkInsert(props).then(data => {
       assert(data.success.objects[0].object.succinctProperties["cmis:name"] === "Doc_20", "name should be Doc_20");

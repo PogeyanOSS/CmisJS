@@ -2,7 +2,7 @@ import 'cross-fetch/polyfill';
 import { btoa } from 'isomorphic-base64';
 import 'isomorphic-form-data';
 import 'url-search-params-polyfill';
-
+import { uuid } from 'uuidv4';
 
 export namespace cmis {
 
@@ -398,12 +398,9 @@ export namespace cmis {
             content = new Buffer(content);
           }
           formData.append(
-            data["name"],
-            content,
-            multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
-
+            data["name"], content,
+            multipartData.mimeTypeExtension ? multipartData.filename.lastIndexOf(".") > 0 ? multipartData.filename : multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
         })
-
         for (let k in body) {
           if (Array.isArray(body[k])) {
             formData.append(k, JSON.stringify(body[k]));
@@ -1824,6 +1821,9 @@ export namespace cmis {
       if (properties["createDocument"] != undefined && properties["createDocument"] != null) {
         properties["createDocument"].forEach(docInput => {
           let dop = {};
+          if (docInput["cmis:objectId"] === undefined || docInput["cmis:objectId"] === null || docInput["cmis:objectId"] === "") {
+            docInput["cmis:objectId"] = uuid();
+          }
           let cmisClass = new cmis.CmisSession(null);
           let addAces = docInput["addAces"];
           let removeAces = docInput["removeAces"];
@@ -1841,7 +1841,7 @@ export namespace cmis {
             }
             multipartDataList.push({
               "multipartData": multipartData,
-              "name": docInput["cmis:name"]
+              "name": docInput["cmis:objectId"] + "_" + docInput["cmis:name"]
             })
             delete docInput["content"];
           }
