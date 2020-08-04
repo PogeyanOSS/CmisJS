@@ -17,7 +17,7 @@ require("cross-fetch/polyfill");
 var isomorphic_base64_1 = require("isomorphic-base64");
 require("isomorphic-form-data");
 require("url-search-params-polyfill");
-var uuidv4_1 = require("uuidv4");
+var uuid_1 = require("uuid");
 var cmis;
 (function (cmis) {
     /**
@@ -1305,7 +1305,7 @@ var cmis;
                 properties["createDocument"].forEach(function (docInput) {
                     var dop = {};
                     if (docInput["cmis:objectId"] === undefined || docInput["cmis:objectId"] === null || docInput["cmis:objectId"] === "") {
-                        docInput["cmis:objectId"] = uuidv4_1.uuid();
+                        docInput["cmis:objectId"] = uuid_1.v4();
                     }
                     var cmisClass = new cmis.CmisSession(null);
                     var addAces = docInput["addAces"];

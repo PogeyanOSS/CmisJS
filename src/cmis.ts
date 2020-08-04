@@ -2,7 +2,7 @@ import 'cross-fetch/polyfill';
 import { btoa } from 'isomorphic-base64';
 import 'isomorphic-form-data';
 import 'url-search-params-polyfill';
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 
 export namespace cmis {
 
@@ -1822,7 +1822,7 @@ export namespace cmis {
         properties["createDocument"].forEach(docInput => {
           let dop = {};
           if (docInput["cmis:objectId"] === undefined || docInput["cmis:objectId"] === null || docInput["cmis:objectId"] === "") {
-            docInput["cmis:objectId"] = uuid();
+            docInput["cmis:objectId"] = uuidv4();
           }
           let cmisClass = new cmis.CmisSession(null);
           let addAces = docInput["addAces"];
