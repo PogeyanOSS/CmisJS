@@ -53,15 +53,6 @@ export declare namespace cmis {
             includeRelationships?: 'none' | 'source' | 'target' | 'both';
             succinct?: boolean;
         }): Promise<any>;
-        query(statement: string, searchAllVersions?: boolean, options?: {
-            maxItems?: number;
-            skipCount?: number;
-            orderBy?: string;
-            renditionFilter?: string;
-            includeAllowableActions?: boolean;
-            includeRelationships?: 'none' | 'source' | 'target' | 'both';
-            succinct?: boolean;
-        }): Promise<any>;
         createType(type: any): Promise<any>;
         updateType(type: any): Promise<any>;
         deleteType(typeId: string): Promise<any>;
@@ -328,5 +319,6 @@ export declare namespace cmis {
         bulkUpdate(properties: any, options?: {
             succinct?: boolean;
         }): Promise<any>;
+        query(query: any): Promise<any>;
     }
 }

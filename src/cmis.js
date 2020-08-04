@@ -441,19 +441,6 @@ var cmis;
         };
         ;
         /**
-         * performs a cmis query against the repository
-         */
-        CmisSession.prototype.query = function (statement, searchAllVersions, options) {
-            if (searchAllVersions === void 0) { searchAllVersions = false; }
-            if (options === void 0) { options = {}; }
-            var o = options;
-            o.cmisaction = 'query';
-            o.statement = statement;
-            o.searchAllVersions = searchAllVersions;
-            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-        };
-        ;
-        /**
          * Creates a new type definition
          */
         CmisSession.prototype.createType = function (type) {
@@ -1439,6 +1426,16 @@ var cmis;
             }
             properties["update"] = updateList;
             return this.postForBulk(this.defaultRepository.repositoryUrl, properties, multipartDataList).then(function (res) { return res.json(); });
+        };
+        ;
+        /**
+        * Evaluate relationship query
+        */
+        CmisSession.prototype.query = function (query) {
+            return this.post(this.defaultRepository.repositoryUrl, {
+                cmisaction: 'query',
+                query: JSON.stringify(query)
+            }).then(function (res) { return res.json(); });
         };
         ;
         return CmisSession;
