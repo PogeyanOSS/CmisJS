@@ -14,7 +14,7 @@ require("cross-fetch/polyfill");
 var isomorphic_base64_1 = require("isomorphic-base64");
 require("isomorphic-form-data");
 require("url-search-params-polyfill");
-var uuidv4_1 = require("uuidv4");
+var uuid_1 = require("uuid");
 var cmis;
 (function (cmis) {
     var Buffer = global['Buffer'];
@@ -335,16 +335,6 @@ var cmis;
             var o = options;
             o.cmisselector = 'checkedout';
             return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-        };
-        ;
-        CmisSession.prototype.query = function (statement, searchAllVersions, options) {
-            if (searchAllVersions === void 0) { searchAllVersions = false; }
-            if (options === void 0) { options = {}; }
-            var o = options;
-            o.cmisaction = 'query';
-            o.statement = statement;
-            o.searchAllVersions = searchAllVersions;
-            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
         };
         ;
         CmisSession.prototype.createType = function (type) {
@@ -1033,7 +1023,7 @@ var cmis;
                 properties["createDocument"].forEach(function (docInput) {
                     var dop = {};
                     if (docInput["cmis:objectId"] === undefined || docInput["cmis:objectId"] === null || docInput["cmis:objectId"] === "") {
-                        docInput["cmis:objectId"] = uuidv4_1.uuid();
+                        docInput["cmis:objectId"] = uuid_1.v4();
                     }
                     var cmisClass = new cmis.CmisSession(null);
                     var addAces = docInput["addAces"];
@@ -1151,6 +1141,13 @@ var cmis;
             }
             properties["update"] = updateList;
             return this.postForBulk(this.defaultRepository.repositoryUrl, properties, multipartDataList).then(function (res) { return res.json(); });
+        };
+        ;
+        CmisSession.prototype.query = function (query) {
+            return this.post(this.defaultRepository.repositoryUrl, {
+                cmisaction: 'query',
+                query: JSON.stringify(query)
+            }).then(function (res) { return res.json(); });
         };
         ;
         return CmisSession;
