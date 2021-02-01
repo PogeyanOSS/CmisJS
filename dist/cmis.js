@@ -1,8 +1,11 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -1144,10 +1147,35 @@ var cmis;
         };
         ;
         CmisSession.prototype.query = function (query) {
-            return this.post(this.defaultRepository.repositoryUrl, {
-                cmisaction: 'query',
-                query: JSON.stringify(query)
-            }).then(function (res) { return res.json(); });
+            var cfg = { method: "POST" };
+            var auth;
+            if (this.username && this.password) {
+                auth = 'Basic ' + isomorphic_base64_1.btoa(this.username + ":" + this.password);
+            }
+            else if (this.token) {
+                auth = "Bearer " + this.token;
+            }
+            if (auth) {
+                cfg.headers = {
+                    'Authorization': auth
+                };
+            }
+            else {
+                cfg.credentials = 'include';
+            }
+            cfg.body = JSON.stringify(query);
+            cfg.headers['Content-Type'] = 'application/json';
+            var response = fetch(this.defaultRepository.repositoryUrl + "?cmisaction=query", cfg).then(function (res) {
+                if (res.status < 200 || res.status > 299) {
+                    throw new HTTPError(res);
+                }
+                return res;
+            });
+            if (this.errorHandler) {
+                response.catch(function (err) { return this.errorHandler(err); });
+            }
+            return response.then(function (res) { return res.json(); });
+            ;
         };
         ;
         return CmisSession;
